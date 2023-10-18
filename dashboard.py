@@ -29,8 +29,9 @@ def landing_page(stdscr):
     password = getpass.getpass(prompt="", stream=stdscr)
 
     # Verify the username and password (you can implement your authentication logic here)
-    if username == "your_username" and password == "your_password":
-        show_dashboard(stdscr, username)
+    if username == "test" and password == "test":
+        dash = Dashboard(stdscr, username)
+        dash.display()
     else:
         stdscr.addstr(8, 1, "Invalid credentials. Press any key to exit.")
         stdscr.getch()

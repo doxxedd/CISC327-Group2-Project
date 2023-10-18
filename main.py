@@ -1,7 +1,9 @@
-import dashboard.py
+import dashboard
+import curses
+
 
 def main(stdscr):
-    dashboard.landing_page()
+    dashboard.landing_page(stdscr)
 
 
 if __name__ == "__main__":
