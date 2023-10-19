@@ -59,4 +59,3 @@ def landing_page(stdscr):
 
     stdscr.refresh()
     stdscr.getch()
-
