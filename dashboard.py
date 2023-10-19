@@ -1,59 +1,55 @@
 import curses
-import time
+import datetime
 from curses.textpad import Textbox, rectangle
 
 
-def set_terminal_size(rows, cols):
-    stdscr = curses.initscr()
-    curses.resizeterm(rows, cols)  # Set the terminal size
-    stdscr.refresh()
-    return stdscr
-
-
-def display_form_element(stdscr, prompt, value, row, col):
-    stdscr.addstr(row, col, prompt)
-    stdscr.addstr(row, col + len(prompt), value)
-
-
-def get_input(stdscr, prompt, row, col):
-    stdscr.addstr(row, col, prompt)
-    stdscr.refresh()
-    input_window = curses.newwin(1, 30, row, col + len(prompt))
-    input_window.keypad(True)
-
-    curses.echo()
-    input_window.refresh()
-    value = input_window.getstr(0, 0).decode('utf-8')
-    curses.noecho()
-
-    return value
-
-
-def landing_page(stdscr):
-    # set_terminal_size(1200, 1000)
-    curses.curs_set(1)
+def dashboard(stdscr):
     stdscr.clear()
-    stdscr.refresh()
+ # Set up colors
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-    login_form = [
-        ("Username: ", ""),
-        ("Password: ", "")
-    ]
+    options = ["Create Task", "Modify Task", "Remove Task"]
+    selected_row = 0
 
-    current_row = 5
-    for label, value in login_form:
-        display_form_element(stdscr, label, value, current_row, 10)
-        current_row += 2
+    curses.curs_set(0)  # Hide the cursor
 
-    # Get user input for username and password
-    username = get_input(stdscr, "", 5, 20)
-    password = get_input(stdscr, "", 7, 20)
+    while True:
+        stdscr.clear()
 
-    # Check for login (demo always allows access)
-    if username == "test" and password == "test":
-        stdscr.addstr(9, 10, "Login successful!", curses.A_BOLD)
-    else:
-        stdscr.addstr(9, 10, "Login failed. Please try again.", curses.A_BOLD)
+        # Display the menu options
+        height, width = stdscr.getmaxyx()
+        for idx, option in enumerate(options):
+            x = width // 2 - len(option) // 2
+            y = height // 2 - len(options) // 2 + idx
+            if idx == selected_row:
+                stdscr.attron(curses.color_pair(1))
+                stdscr.addstr(y, x, option)
+                stdscr.attroff(curses.color_pair(1))
+            else:
+                stdscr.addstr(y, x, option)
 
-    stdscr.refresh()
-    stdscr.getch()
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and selected_row > 0:
+            selected_row -= 1
+        elif key == curses.KEY_DOWN and selected_row < len(options) - 1:
+            selected_row += 1
+        elif key == 10:  # Enter key
+            # Execute the selected option
+            stdscr.clear()
+            if selected_row == 0:
+                # Create Task
+                stdscr.addstr(5, 0, "You chose 'Create Task'")
+            elif selected_row == 1:
+                # Modify Task
+                stdscr.addstr(5, 0, "You chose 'Modify Task'")
+            elif selected_row == 2:
+                # Remove Task
+                stdscr.addstr(5, 0, "You chose 'Remove Task'")
+            stdscr.refresh()
+            stdscr.getch()  # Wait for a key press before returning to the menu
+

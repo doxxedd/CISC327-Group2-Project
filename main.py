@@ -1,9 +1,9 @@
-import dashboard
+import landingpage
 import curses
 
 
 def main(stdscr):
-    dashboard.landing_page(stdscr)
+    landingpage.landing_page(stdscr)
 
 
 if __name__ == "__main__":
