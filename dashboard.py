@@ -11,8 +11,8 @@ def set_terminal_size(rows, cols):
 
 
 def landing_page(stdscr):
-    stdscr.clear()
     # set_terminal_size(1200, 1000)
+    stdscr.clear()
     curses.curs_set(0)
 
     curses.start_color()
@@ -57,7 +57,7 @@ def landing_page(stdscr):
         # Get user input
         key = stdscr.getch()
 
-        if key == 10:  # Enter key
+        if key == curses.KEY_ENTER:  # Enter key
             active_input = password  # Change the active input to password
         elif key == curses.KEY_BACKSPACE:
             if active_input == username:
