@@ -3,37 +3,69 @@ import time
 import getpass
 
 
-class Dashboard:
-    def __init__(self, stdscr, username):
-        self.stdscr = stdscr
-        self.username = username
-
-    def display(self):
-        self.stdscr.clear()
-        self.stdscr.addstr(2, 1, f"Welcome, {self.username}!")
-        self.stdscr.addstr(4, 1, "Dashboard")
-        while True:
-            self.stdscr.addstr(6, 1, f"Current Time: {time.strftime('%H:%M:%S')}")
-            self.stdscr.refresh()
-            time.sleep(1)
+def set_terminal_size(rows, cols):
+    stdscr = curses.initscr()
+    curses.resizeterm(rows, cols)  # Set the terminal size
+    stdscr.refresh()
+    return stdscr
 
 
 def landing_page(stdscr):
-    curses.curs_set(1)
     stdscr.clear()
-    stdscr.addstr(2, 1, "Please log in:")
-    stdscr.addstr(4, 1, "Username: ")
-    stdscr.addstr(5, 1, "Password: ")
+    # set_terminal_size(1200, 1000)
+    curses.curs_set(0)
 
-    username = stdscr.getstr(4, 11).decode()
-    password = getpass.getpass(prompt="", stream=stdscr)
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-    # Verify the username and password (you can implement your authentication logic here)
-    if username == "test" and password == "test":
-        dash = Dashboard(stdscr, username)
-        dash.display()
-    else:
-        stdscr.addstr(8, 1, "Invalid credentials. Press any key to exit.")
-        stdscr.getch()
+    title = "Tasker"
+    title_y, title_x = 2, int((curses.COLS - len(title)) / 2)
 
-    return username, password
+    current_time = time.strftime('%H:%M:%S')
+    time_y, time_x = 1, curses.COLS - len(current_time) - 1
+
+
+    username = ""
+    password = ""
+    username_label = "Username: "
+    password_label = "Password: "
+
+    active_input = username
+
+    while True:
+        stdscr.clear()
+
+        # Display title
+        stdscr.addstr(title_y, title_x, title, curses.color_pair(1))
+
+        # Draw username input box
+        stdscr.addstr(title_y + 2, title_x, username_label)
+        stdscr.addstr(title_y + 2, title_x + len(username_label), username, curses.color_pair(2))
+
+        # Draw password input box (hide the password with asterisks)
+        stdscr.addstr(title_y + 3, title_x, password_label)
+        stdscr.addstr(title_y + 3, title_x + len(password_label), '*' * len(password), curses.color_pair(2))
+
+        if active_input == username:
+            stdscr.move(title_y + 2, title_x + len(username) + len(username_label))
+        else:
+            stdscr.move(title_y + 3, title_x + len(password) + len(password_label))
+
+        stdscr.refresh()
+
+        # Get user input
+        key = stdscr.getch()
+
+        if key == 10:  # Enter key
+            active_input = password  # Change the active input to password
+        elif key == curses.KEY_BACKSPACE:
+            if active_input == username:
+                username = username[:-1]
+            else:
+                password = password[:-1]
+        else:
+            if active_input == username:
+                username += chr(key)
+            else:
+                password += chr(key)
