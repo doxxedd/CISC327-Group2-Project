@@ -23,12 +23,14 @@ def get_input(stdscr, prompt, row, col):
 
 
 def create_field_page(stdscr, option, field1, field2, field3):
+    
     curses.curs_set(1)
     stdscr.clear()
     stdscr.refresh()
     # Create Task
     stdscr.addstr(5, 30, f"You chose '{option}'")
-
+    taskoptions =  ["Create Task", "Modify Task", "Remove Task"]
+    projectoptions = ["Create Project", "Modify Project", "Remove Project"]
     detail_form = [
         (f"{field1}: ", ""),
         (f"{field2}: ", ""),
@@ -40,9 +42,19 @@ def create_field_page(stdscr, option, field1, field2, field3):
         display_form_element(stdscr, label, value, current_row, 25)
         current_row += 2
     # Get user input for username and password
-    field1 = get_input(stdscr, "", 10, 35)
-    field2 = get_input(stdscr, "", 12, 35)
-    field3 = get_input(stdscr, "", 14, 35)
+ 
+    if option in taskoptions:
+        field1 = get_input(stdscr, "", 10, 35)
+        field2 = get_input(stdscr, "", 12, 35)
+        field3 = get_input(stdscr, "", 14, 35)
+    if option in projectoptions:
+        field1 = get_input(stdscr, "", 10, 35)
+        field2 = get_input(stdscr, "", 12, 40)
+        field3 = get_input(stdscr, "", 14, 35)
+     
+
+
+
     if field1 == "test" and field2 == "test" and field3 == "test":
         stdscr.addstr(18, 35, "success!", curses.A_BOLD)
     else:
@@ -50,6 +62,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
 
     stdscr.refresh()
     stdscr.getch()
+    
 
 
 def dashboard(stdscr):
@@ -59,7 +72,9 @@ def dashboard(stdscr):
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-    options = ["Create Task", "Modify Task", "Remove Task"]
+    options = ["Create Task", "Modify Task", "Remove Task", "Create Project", "Modify Project", "Remove Project"]
+
+    
     selected_row = 0
 
     curses.curs_set(0)  # Hide the cursor
@@ -91,7 +106,7 @@ def dashboard(stdscr):
             # Execute the selected option
             stdscr.clear()
             if selected_row == 0:
-                # create task
+                # Create Task
                 create_field_page(stdscr, "Create Task", "title", "details", "deadline")
             elif selected_row == 1:
                 # Modify Task
@@ -99,5 +114,14 @@ def dashboard(stdscr):
             elif selected_row == 2:
                 # Remove Task
                 stdscr.addstr(5, 30, "You chose 'Remove Task'")
+            elif selected_row == 3:
+                # Create Project
+                create_field_page(stdscr, "Create Project", "title", "description", "deadline")
+            elif selected_row == 4:
+                # Modify Project
+                create_field_page(stdscr, "Modify Project", "title", "description", "deadline")
+            elif selected_row == 5:
+                # Remove Project
+                stdscr.addstr(5, 30, "You chose 'Remove Project'")
             stdscr.refresh()
-            stdscr.getch()  # Wait for a key press before returning to the menu
+            stdscr.getch() 
