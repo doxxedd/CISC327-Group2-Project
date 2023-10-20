@@ -73,9 +73,10 @@ def create_field_page(stdscr, option, field1, field2, field3):
         field1 = get_input(stdscr, "", 10, 35)
         field2 = get_input(stdscr, "", 12, 35)
         field3 = get_input(stdscr, "", 14, 35)
+
     if option in projectoptions:
         field1 = get_input(stdscr, "", 10, 35)
-        field2 = get_input(stdscr, "", 12, 40)
+        field2 = get_input(stdscr, "", 12, 35)
         field3 = get_input(stdscr, "", 14, 35)
 
     if field1 == "test" and field2 == "test" and field3 == "test":
@@ -141,10 +142,10 @@ def dashboard(stdscr):
                 stdscr.addstr(5, 30, "You chose 'Remove Task'")
             elif selected_row == 3:
                 # Create Project
-                create_field_page(stdscr, "Create Project", "title", "description", "deadline")
+                create_field_page(stdscr, "Create Project", "title", "details", "deadline")
             elif selected_row == 4:
                 # Modify Project
-                create_field_page(stdscr, "Modify Project", "title", "description", "deadline")
+                create_field_page(stdscr, "Modify Project", "title", "details", "deadline")
             elif selected_row == 5:
                 # Remove Project
                 stdscr.addstr(5, 30, "You chose 'Remove Project'")
