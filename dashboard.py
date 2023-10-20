@@ -3,8 +3,6 @@ Code for dashboard where user is prompted to choose from various action options
 """
 
 import curses
-import datetime
-from curses.textpad import Textbox, rectangle
 
 
 def display_form_element(stdscr, prompt, value, row, col):
@@ -99,7 +97,8 @@ def dashboard(stdscr):
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-    options = ["Create Task", "Modify Task", "Remove Task", "Create Project", "Modify Project", "Remove Project"]
+    options = ["Create Task", "Modify Task", "Remove Task",
+                "Create Project", "Modify Project", "Remove Project"]
 
     selected_row = 0
 
@@ -132,22 +131,16 @@ def dashboard(stdscr):
             # Execute the selected option
             stdscr.clear()
             if selected_row == 0:
-                # Create Task
                 create_field_page(stdscr, "Create Task", "title", "details", "deadline")
             elif selected_row == 1:
-                # Modify Task
                 create_field_page(stdscr, "Modify Task", "title", "details", "deadline")
             elif selected_row == 2:
-                # Remove Task
                 stdscr.addstr(5, 30, "You chose 'Remove Task'")
             elif selected_row == 3:
-                # Create Project
                 create_field_page(stdscr, "Create Project", "title", "details", "deadline")
             elif selected_row == 4:
-                # Modify Project
                 create_field_page(stdscr, "Modify Project", "title", "details", "deadline")
             elif selected_row == 5:
-                # Remove Project
                 stdscr.addstr(5, 30, "You chose 'Remove Project'")
             stdscr.refresh()
             stdscr.getch()

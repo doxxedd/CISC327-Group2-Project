@@ -1,5 +1,6 @@
 import datetime
-
+    """Backend classes to be used in next iterations of the prototype
+    """
 
 class User:
     def __init__(self):
