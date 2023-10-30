@@ -4,7 +4,26 @@ User landing page where user is prompted for login details
 import curses
 import time
 import dashboard
+import sqlite3
+import core_objects
 
+def register_user(username, password):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # Check if the username already exists
+    cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+    existing_user = cursor.fetchone()
+
+    if existing_user:
+        conn.close()
+        return False  # Username already exists, registration failed
+
+    # If the username is unique, insert the new user into the database
+    cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+    conn.commit()
+    conn.close()
+    return True  # Registration successful
 
 def set_terminal_size(rows, cols):
     """
@@ -84,6 +103,17 @@ def show_time(stdscr):
     time_y, time_x = 1, curses.COLS - len(current_time) - 1
     stdscr.addstr(time_y, time_x, current_time, curses.color_pair(2))
 
+def validate_user(username, password):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+    user = cursor.fetchone()
+
+    conn.close()
+
+    return user is not None
+
 
 def landing_page(stdscr):
     """
@@ -91,6 +121,42 @@ def landing_page(stdscr):
     :return: None
     :rtype:
     """
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            password TEXT
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            details TEXT,
+            deadline TEXT,
+            completed BOOLEAN,
+            deleted BOOLEAN,
+            user_id INTEGER,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    ''')
+
+    # Create Project table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS projects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            details TEXT,
+            completed BOOLEAN,
+            user_id INTEGER,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    ''')
+    conn.commit()
+    conn.close()
     # set_terminal_size(1200, 1000)
     curses.curs_set(1)
     stdscr.clear()
@@ -120,13 +186,38 @@ def landing_page(stdscr):
     username = get_input(stdscr, "", 5, len(login_form[0][0]) + 2)
     password = get_input(stdscr, "", 7, len(login_form[1][0]) + 2)
 
-    # Check for login (demo always allows access)
-    if username == "test" and password == "test":
-        stdscr.addstr(9, get_center_x("Login successful!"), "Login successful!", curses.A_BOLD)
-        dashboard.dashboard(stdscr)
+    # # Check for login (demo always allows access)
+    # if username == "test" and password == "test":
+    #     stdscr.addstr(9, get_center_x("Login successful!"), "Login successful!", curses.A_BOLD)
+    #     dashboard.dashboard(stdscr)
+    # else:
+    #     curses.curs_set(0)
+    #     stdscr.addstr(9, get_center_x("Login failed."), "Login failed.", curses.A_BOLD)
+
+    # stdscr.refresh()
+    stdscr.addstr(11, get_center_x("Press 'L' to log in or 'R' to register."), "Press 'L' to log in or 'R' to register.", curses.A_BOLD)
+    stdscr.refresh()
+
+    action = stdscr.getch()
+    if action == ord('L') or action == ord('l'):
+        # User chose to log in, proceed with login
+        user_exists = validate_user(username, password)
+        if user_exists:
+            stdscr.addstr(9, get_center_x("Login successful!"), "Login successful!", curses.A_BOLD)
+            dashboard.dashboard(stdscr)
+        else:
+            curses.curs_set(0)
+            stdscr.addstr(9, get_center_x("Login failed."), "Login failed.", curses.A_BOLD)
+    elif action == ord('R') or action == ord('r'):
+        # User chose to register, proceed with registration
+        registration_success = register_user(username, password)
+        if registration_success:
+            stdscr.addstr(9, get_center_x("Registration successful!"), "Registration successful!", curses.A_BOLD)
+        else:
+            curses.curs_set(0)
+            stdscr.addstr(9, get_center_x("Registration failed. Username already exists."), "Registration failed. Username already exists.", curses.A_BOLD)
     else:
-        curses.curs_set(0)
-        stdscr.addstr(9, get_center_x("Login failed."), "Login failed.", curses.A_BOLD)
+        stdscr.addstr(9, get_center_x("Invalid choice."), "Invalid choice.", curses.A_BOLD)
 
     stdscr.refresh()
     stdscr.getch()
