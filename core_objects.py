@@ -65,6 +65,12 @@ class User:
             task_details = cursor.fetchone()
         return task_details
     
+    def remove_task_from_db(self, task_id):
+        # Remove the task from the database based on its ID
+        user_id = self.user_id  # Get the current user's ID
+        cursor.execute('DELETE FROM tasks WHERE id = ? AND user_id = ?', (task_id, user_id))
+        conn.commit()
+    
     def update_task(self, task_id, title, details, deadline):
         if self.user_id:
             cursor.execute('UPDATE tasks SET title = ?, details = ?, deadline = ? WHERE id = ? AND user_id = ?', (title, details, deadline, task_id, self.user_id))

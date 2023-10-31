@@ -5,7 +5,6 @@ import curses
 
 
 
-
 def main(stdscr):   
     landingpage.landing_page(stdscr)
 

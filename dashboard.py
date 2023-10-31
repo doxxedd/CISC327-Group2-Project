@@ -6,8 +6,15 @@ import curses
 import core_objects
 import landingpage
 import shared
+import datetime
+import threading
 
-
+def update_live_clock(stdscr):
+    while True:
+        current_time = datetime.datetime.now().strftime('%H:%M:%S')
+        stdscr.addstr(0, 0, f'Time: {current_time}', curses.color_pair(2))
+        stdscr.refresh()
+        time.sleep(1)
 
 def display_form_element(stdscr, prompt, value, row, col):
     """
@@ -88,9 +95,8 @@ def create_field_page(stdscr, option, field1, field2, field3):
         stdscr.addstr(18, 35, "success!", curses.A_BOLD)
     else:
         stdscr.addstr(18, 30, "invalid field(s)!", curses.A_BOLD)
-
+    stdscr.clear()
     stdscr.refresh()
-    stdscr.getch()
 
 
 
@@ -100,10 +106,13 @@ def dashboard(stdscr):
     :return: None
     """
     stdscr.clear()
+    stdscr.refresh()
     # Set up colors
     curses.start_color()
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+
+   
 
     options = ["Create Task", "Modify Task", "Remove Task",
                 "Create Project", "Modify Project", "Remove Project"]
@@ -114,6 +123,9 @@ def dashboard(stdscr):
 
     while True:
         stdscr.clear()
+        stdscr.refresh()
+        
+
 
         # Display the menu options
         height, width = stdscr.getmaxyx()
@@ -188,11 +200,35 @@ def dashboard(stdscr):
                 else:
                     stdscr.addstr(5, 30, "No tasks found to modify.")
             elif selected_row == 2:
-                stdscr.addstr(5, 30, "You chose 'Remove Task'")
+                tasks = shared.user.get_user_tasks()  # Fetch user's tasks
+                if tasks:
+                    stdscr.addstr(5, 30, "Select a task to modify:")
+                    for i, task in enumerate(tasks, start=1):
+                        stdscr.addstr(5 + i, 32, f"{i}. {task[1]}")
+                    stdscr.refresh()
+                    # Get user input for task selection
+                    task_selection = get_input(stdscr, "Enter the number of the task to delete(or press 'Enter' to go back): ", 10 + len(tasks), 35)
+                    stdscr.clear()   
+                    if task_selection.isnumeric():
+                        task_selection = int(task_selection)
+                        if 1 <= task_selection <= len(tasks):
+                            # Fetch task details
+                            selected_task_id = tasks[task_selection - 1][0]
+                            shared.user.remove_task_from_db(selected_task_id)
+                            stdscr.addstr(19, 30, "Task deleted successfully.", curses.A_BOLD)
+                        else:
+                            stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
+                    else:
+                        stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
+                else:
+                    stdscr.addstr(5, 30, "No tasks found to delete.")
             elif selected_row == 3:
                 create_field_page(stdscr, "Create Project", "title", "details", "deadline")
             elif selected_row == 4:
                 create_field_page(stdscr, "Modify Project", "title", "details", "deadline")
             elif selected_row == 5:
                 stdscr.addstr(5, 30, "You chose 'Remove Project'")
+            stdscr.clear()
             stdscr.refresh()
+            
+
