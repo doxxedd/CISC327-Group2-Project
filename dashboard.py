@@ -7,6 +7,7 @@ import core_objects
 import landingpage
 import shared
 import datetime
+import calendar
 import threading
 
 def update_live_clock(stdscr):
@@ -27,6 +28,66 @@ def display_form_element(stdscr, prompt, value, row, col):
     """
     stdscr.addstr(row, col, prompt)
     stdscr.addstr(row, col + len(prompt), value)
+
+def display_calendar(stdscr):
+    stdscr.clear()
+    stdscr.refresh()
+
+    # Get the current date
+    today = datetime.date.today()
+    current_date = today
+
+    selected_date = None
+
+    while True:
+        # Clear the screen and draw the calendar
+        stdscr.clear()
+
+        # Display the month and year
+        header = f'{current_date.strftime("%B %Y")}'
+        stdscr.addstr(1, 2, header, curses.A_BOLD)
+
+        # Display the days of the week
+        days_of_week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        for i, day in enumerate(days_of_week):
+            stdscr.addstr(3, 4 + 4 * i, day, curses.A_BOLD)
+
+        # Display the days of the month
+        first_day = current_date.replace(day=1)
+        last_day = current_date.replace(day=calendar.monthrange(current_date.year, current_date.month)[1])
+
+        for day in range((last_day - first_day).days + 1):
+            date = first_day + datetime.timedelta(days=day)
+            row = (day + first_day.weekday()) // 7 + 4
+            col = (day + first_day.weekday()) % 7
+
+            if date == today:
+                stdscr.addstr(row, 4 + 4 * col, date.strftime("%d"), curses.color_pair(1) | curses.A_BOLD)
+            elif date == current_date:
+                stdscr.addstr(row, 4 + 4 * col, date.strftime("%d"), curses.color_pair(2) | curses.A_BOLD)
+            else:
+                stdscr.addstr(row, 4 + 4 * col, date.strftime("%d"))
+
+        if selected_date is not None:
+            stdscr.addstr(12, 2, "Selected Date: " + selected_date.strftime("%Y-%m-%d"), curses.A_BOLD)
+
+        stdscr.refresh()
+
+        # Listen for user input
+        key = stdscr.getch()
+
+        if key == ord('q'):
+            break
+        elif key == curses.KEY_RIGHT:
+            current_date += datetime.timedelta(days=1)
+        elif key == curses.KEY_LEFT:
+            current_date -= datetime.timedelta(days=1)
+        elif key == 10:  # Enter key (select date)
+            selected_date = current_date
+            break
+
+    return selected_date
+
 
 
 def get_input(stdscr, prompt, row, col):
@@ -81,7 +142,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
     if option in taskoptions:
         field1 = get_input(stdscr, "", 10, 35)
         field2 = get_input(stdscr, "", 12, 35)
-        field3 = get_input(stdscr, "", 14, 35)
+        field3 = display_calendar(stdscr)
         if option == "Create Task":
             task = core_objects.Task()
             task.create_task(field1, field2, field3)
