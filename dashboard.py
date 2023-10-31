@@ -155,7 +155,7 @@ def dashboard(stdscr):
                         if 1 <= task_selection <= len(tasks):
                             # Fetch task details
                             selected_task_id = tasks[task_selection - 1][0]
-                            task_details = shared.user.get_task_details(selected_task_id)
+                            task_details = list(shared.user.get_task_details(selected_task_id))
                             if task_details:
                                 # Display task details and get updated values from the user
                                 stdscr.addstr(10, 30, "Task Details:")
@@ -168,15 +168,16 @@ def dashboard(stdscr):
                                 new_deadline = get_input(stdscr, "New Deadline (or press 'Enter' to keep the current value): ", 17, 32)
 
                                 # Check if input is empty (i.e., user pressed 'Enter')
+                                new_tasks = task_details
                                 if new_title:
-                                    task_details[1] = new_title
+                                    new_tasks[1] = new_title
                                 if new_details:
-                                    task_details[2] = new_details
+                                    new_tasks[2] = new_details
                                 if new_deadline:
-                                    task_details[3] = new_deadline
+                                    new_tasks[3] = new_deadline
 
                                 # Update the task
-                                shared.user.update_task(selected_task_id, task_details[1], task_details[2], task_details[3])
+                                shared.user.update_task(selected_task_id, new_tasks[1], new_tasks[2], new_tasks[3])
                                 stdscr.addstr(19, 30, "Task modified successfully.", curses.A_BOLD)
                             else:
                                 stdscr.addstr(19, 30, "Task not found or doesn't belong to you.", curses.A_BOLD)
