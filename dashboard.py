@@ -1,8 +1,12 @@
 """
 Code for dashboard where user is prompted to choose from various action options
 """
-
+import sqlite3
 import curses
+import core_objects
+import landingpage
+import shared
+
 
 
 def display_form_element(stdscr, prompt, value, row, col):
@@ -71,6 +75,9 @@ def create_field_page(stdscr, option, field1, field2, field3):
         field1 = get_input(stdscr, "", 10, 35)
         field2 = get_input(stdscr, "", 12, 35)
         field3 = get_input(stdscr, "", 14, 35)
+        if option == "Create Task":
+            task = core_objects.Task()
+            task.create_task(field1, field2, field3)
 
     if option in projectoptions:
         field1 = get_input(stdscr, "", 10, 35)
@@ -84,6 +91,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
 
     stdscr.refresh()
     stdscr.getch()
+
 
 
 def dashboard(stdscr):
@@ -133,7 +141,51 @@ def dashboard(stdscr):
             if selected_row == 0:
                 create_field_page(stdscr, "Create Task", "title", "details", "deadline")
             elif selected_row == 1:
-                create_field_page(stdscr, "Modify Task", "title", "details", "deadline")
+                tasks = shared.user.get_user_tasks()  # Fetch user's tasks
+                if tasks:
+                    stdscr.addstr(5, 30, "Select a task to modify:")
+                    for i, task in enumerate(tasks, start=1):
+                        stdscr.addstr(5 + i, 32, f"{i}. {task[1]}")
+                    stdscr.refresh()
+                    # Get user input for task selection
+                    task_selection = get_input(stdscr, "Enter the number of the task to modify (or press 'Enter' to go back): ", 10 + len(tasks), 35)
+                    stdscr.clear()   
+                    if task_selection.isnumeric():
+                        task_selection = int(task_selection)
+                        if 1 <= task_selection <= len(tasks):
+                            # Fetch task details
+                            selected_task_id = tasks[task_selection - 1][0]
+                            task_details = shared.user.get_task_details(selected_task_id)
+                            if task_details:
+                                # Display task details and get updated values from the user
+                                stdscr.addstr(10, 30, "Task Details:")
+                                stdscr.addstr(11, 32, f"Title: {task_details[1]}")
+                                stdscr.addstr(12, 32, f"Details: {task_details[2]}")
+                                stdscr.addstr(13, 32, f"Deadline: {task_details[3]}")
+
+                                new_title = get_input(stdscr, "New Title (or press 'Enter' to keep the current value): ", 15, 32)
+                                new_details = get_input(stdscr, "New Details (or press 'Enter' to keep the current value): ", 16, 32)
+                                new_deadline = get_input(stdscr, "New Deadline (or press 'Enter' to keep the current value): ", 17, 32)
+
+                                # Check if input is empty (i.e., user pressed 'Enter')
+                                if new_title:
+                                    task_details[1] = new_title
+                                if new_details:
+                                    task_details[2] = new_details
+                                if new_deadline:
+                                    task_details[3] = new_deadline
+
+                                # Update the task
+                                shared.user.update_task(selected_task_id, task_details[1], task_details[2], task_details[3])
+                                stdscr.addstr(19, 30, "Task modified successfully.", curses.A_BOLD)
+                            else:
+                                stdscr.addstr(19, 30, "Task not found or doesn't belong to you.", curses.A_BOLD)
+                        else:
+                            stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
+                    else:
+                        stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
+                else:
+                    stdscr.addstr(5, 30, "No tasks found to modify.")
             elif selected_row == 2:
                 stdscr.addstr(5, 30, "You chose 'Remove Task'")
             elif selected_row == 3:
@@ -143,4 +195,3 @@ def dashboard(stdscr):
             elif selected_row == 5:
                 stdscr.addstr(5, 30, "You chose 'Remove Project'")
             stdscr.refresh()
-            stdscr.getch()

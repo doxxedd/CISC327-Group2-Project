@@ -5,7 +5,12 @@ import curses
 import time
 import dashboard
 import sqlite3
-import core_objects
+from core_objects import User
+import shared
+
+
+
+
 
 def register_user(username, password):
     conn = sqlite3.connect('database.db')
@@ -158,66 +163,62 @@ def landing_page(stdscr):
     conn.commit()
     conn.close()
     # set_terminal_size(1200, 1000)
-    curses.curs_set(1)
-    stdscr.clear()
+    while True:
+        curses.curs_set(1)
+        stdscr.clear()
 
-    # initialize colors
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        # initialize colors
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-    # display the time
-    show_time(stdscr)
+        # display the time
+        show_time(stdscr)
 
-    # display title
-    show_title(stdscr)
-    stdscr.refresh()
+        # display title
+        show_title(stdscr)
+        stdscr.refresh()
 
-    # list of prompts
-    login_form = [["Username: ", ""], ["Password: ", ""]]
+        # list of prompts
+        login_form = [["Username: ", ""], ["Password: ", ""]]
 
-    # display prompts and input fields
-    current_row = 5
-    for label, value in login_form:
-        display_form_element(stdscr, label, value, current_row, 2)
-        current_row += 2
+        # display prompts and input fields
+        current_row = 5
+        for label, value in login_form:
+            display_form_element(stdscr, label, value, current_row, 2)
+            current_row += 2
 
-    # Get user input for username and password
-    username = get_input(stdscr, "", 5, len(login_form[0][0]) + 2)
-    password = get_input(stdscr, "", 7, len(login_form[1][0]) + 2)
+        # Get user input for username and password
+        username = get_input(stdscr, "", 5, len(login_form[0][0]) + 2)
+        password = get_input(stdscr, "", 7, len(login_form[1][0]) + 2)
 
-    # # Check for login (demo always allows access)
-    # if username == "test" and password == "test":
-    #     stdscr.addstr(9, get_center_x("Login successful!"), "Login successful!", curses.A_BOLD)
-    #     dashboard.dashboard(stdscr)
-    # else:
-    #     curses.curs_set(0)
-    #     stdscr.addstr(9, get_center_x("Login failed."), "Login failed.", curses.A_BOLD)
-
-    # stdscr.refresh()
-    stdscr.addstr(11, get_center_x("Press 'L' to log in or 'R' to register."), "Press 'L' to log in or 'R' to register.", curses.A_BOLD)
-    stdscr.refresh()
-
-    action = stdscr.getch()
-    if action == ord('L') or action == ord('l'):
-        # User chose to log in, proceed with login
+        # Check for login
         user_exists = validate_user(username, password)
+
         if user_exists:
             stdscr.addstr(9, get_center_x("Login successful!"), "Login successful!", curses.A_BOLD)
+
+            shared.user = User()
+            shared.user.login_user(username, password)
             dashboard.dashboard(stdscr)
+            break  # Exit the loop if login is successful
         else:
             curses.curs_set(0)
             stdscr.addstr(9, get_center_x("Login failed."), "Login failed.", curses.A_BOLD)
-    elif action == ord('R') or action == ord('r'):
-        # User chose to register, proceed with registration
-        registration_success = register_user(username, password)
-        if registration_success:
-            stdscr.addstr(9, get_center_x("Registration successful!"), "Registration successful!", curses.A_BOLD)
-        else:
-            curses.curs_set(0)
-            stdscr.addstr(9, get_center_x("Registration failed. Username already exists."), "Registration failed. Username already exists.", curses.A_BOLD)
-    else:
-        stdscr.addstr(9, get_center_x("Invalid choice."), "Invalid choice.", curses.A_BOLD)
 
+        stdscr.addstr(11, get_center_x("Press 'R' to retry or 'C' to register."), "Press 'R' to retry or 'C' to register.", curses.A_BOLD)
+        stdscr.refresh()
+        action = stdscr.getch()
+
+        if action == ord('C') or action == ord('c'):
+            # User chose to register, proceed with registration
+            registration_success = register_user(username, password)
+            if registration_success:
+                stdscr.addstr(9, get_center_x("Registration successful!"), "Registration successful!", curses.A_BOLD)
+            else:
+                curses.curs_set(0)
+                stdscr.addstr(9, get_center_x("Registration failed. Username already exists."), "Registration failed. Username already exists.", curses.A_BOLD)
+
+    conn.close()
     stdscr.refresh()
     stdscr.getch()

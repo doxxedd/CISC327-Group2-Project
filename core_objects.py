@@ -1,10 +1,12 @@
 import datetime
+
 import sqlite3
+from shared import user
 """Backend classes to be used in next iterations of the prototype
     """
 conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
-current_user = None 
+current_user = None
 
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS users (
@@ -49,9 +51,30 @@ class User:
         cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (self.username, self.password))
         conn.commit()
 
+    def get_user_tasks(self):
+        tasks = []
+        if self.user_id:
+            cursor.execute('SELECT id, title FROM tasks WHERE user_id = ? AND deleted = 0', (self.user_id,))
+            tasks = cursor.fetchall()
+        return tasks
+    
+    def get_task_details(self, task_id):
+        task_details = None
+        if self.user_id:
+            cursor.execute('SELECT id, title, details, deadline FROM tasks WHERE id = ? AND user_id = ? AND deleted = 0', (task_id, self.user_id))
+            task_details = cursor.fetchone()
+        return task_details
+    
+    def update_task(self, task_id, title, details, deadline):
+        if self.user_id:
+            cursor.execute('UPDATE tasks SET title = ?, details = ?, deadline = ? WHERE id = ? AND user_id = ?', (title, details, deadline, task_id, self.user_id))
+            conn.commit()
+
     def login_user(self, username, password):
         cursor.execute('SELECT id FROM users WHERE username = ? AND password = ?', (username, password))
         user_id = cursor.fetchone()
+        self.username = username
+        self.password = password
         if user_id:
             self.user_id = user_id[0]
             global current_user  # Make current_user a global variable
@@ -104,6 +127,7 @@ class Task:
             conn.commit()
         else:
             print("No user is currently logged in. Cannot modify the task.")
+
 
     def complete_task(self):
         self.completed = True
