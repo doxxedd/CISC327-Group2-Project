@@ -238,7 +238,7 @@ def dashboard(stdscr):
 
                                 new_title = get_input(stdscr, "New Title (or press 'Enter' to keep the current value): ", 15, 32)
                                 new_details = get_input(stdscr, "New Details (or press 'Enter' to keep the current value): ", 16, 32)
-                                new_deadline = get_input(stdscr, "New Deadline (or press 'Enter' to keep the current value): ", 17, 32)
+                                new_deadline = display_calendar(stdscr)
 
                                 # Check if input is empty (i.e., user pressed 'Enter')
                                 new_tasks = task_details
