@@ -199,7 +199,36 @@ def dashboard(stdscr):
                 stdscr.attroff(curses.color_pair(1))
             else:
                 stdscr.addstr(y, x, option)
+        
 
+        # Display tasks in the timeline bar
+        taskslist = shared.user.get_user_tasks()
+        newlist = {}
+        for task in taskslist:
+
+            task = list(task)
+            taskinfo = list(shared.user.get_task_details(task[0]))
+            del taskinfo[0]
+            del taskinfo[1]
+            newlist[taskinfo[0]] = taskinfo[1]
+        sorted_list = sorted(newlist.items(), key=lambda x:x[1])
+        
+
+        # Display tasks in the timeline bar
+        if sorted_list:
+            max_displayed_tasks = min(curses.LINES - 2, len(sorted_list))
+            timeline_x = 2  # Adjust this value to set the left margin
+            timeline_y = max(1, (curses.LINES - max_displayed_tasks) // 2)  # Adjust this value to set the vertical center
+
+            # Add the timeline title
+            title_x = 2  # Adjust this value to set the left margin
+            title_y = max(0, (curses.LINES - max_displayed_tasks) // 2 - 1)  # Place it above the timeline
+            stdscr.addstr(title_y, title_x, "Timeline", curses.A_UNDERLINE)
+
+            for task_name, deadline in sorted_list[:max_displayed_tasks]:
+                task_info = f"{task_name} ({deadline})"
+                stdscr.addstr(timeline_y, timeline_x, task_info, curses.A_BOLD)
+                timeline_y += 1
         stdscr.refresh()
 
         key = stdscr.getch()
