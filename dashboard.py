@@ -8,7 +8,7 @@ import landingpage
 import shared
 import datetime
 import calendar
-import threading
+import time
 
 def update_live_clock(stdscr):
     while True:
@@ -229,7 +229,7 @@ def dashboard(stdscr):
                 task_info = f"{task_name} ({deadline})"
                 stdscr.addstr(timeline_y, timeline_x, task_info, curses.A_BOLD)
                 timeline_y += 1
-        stdscr.refresh()
+        # stdscr.refresh()
 
         key = stdscr.getch()
 
@@ -285,10 +285,12 @@ def dashboard(stdscr):
                                 stdscr.addstr(19, 30, "Task not found or doesn't belong to you.", curses.A_BOLD)
                         else:
                             stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
+                            
                     else:
                         stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
                 else:
                     stdscr.addstr(5, 30, "No tasks found to modify.")
+                    
             elif selected_row == 2:
                 tasks = shared.user.get_user_tasks()  # Fetch user's tasks
                 if tasks:
@@ -307,6 +309,7 @@ def dashboard(stdscr):
                             shared.user.remove_task_from_db(selected_task_id)
                             stdscr.addstr(19, 30, "Task deleted successfully.", curses.A_BOLD)
                         else:
+                            time.sleep
                             stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
                     else:
                         stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
