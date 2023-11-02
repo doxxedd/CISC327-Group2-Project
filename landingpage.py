@@ -155,11 +155,13 @@ def landing_page(stdscr):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             details TEXT,
+            deadline TEXT,
             completed BOOLEAN,
             user_id INTEGER,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     ''')
+
     conn.commit()
     conn.close()
     # set_terminal_size(1200, 1000)

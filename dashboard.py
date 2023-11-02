@@ -150,7 +150,10 @@ def create_field_page(stdscr, option, field1, field2, field3):
     if option in projectoptions:
         field1 = get_input(stdscr, "", 10, 35)
         field2 = get_input(stdscr, "", 12, 35)
-        field3 = get_input(stdscr, "", 14, 35)
+        field3 = display_calendar(stdscr)
+        if option == "Create Project":
+            project = core_objects.Project()
+            project.create_project(field1, field2, field3)
 
     if field1 == "test" and field2 == "test" and field3 == "test":
         stdscr.addstr(18, 35, "success!", curses.A_BOLD)

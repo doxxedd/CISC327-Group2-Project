@@ -35,6 +35,7 @@ cursor.execute('''
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         details TEXT,
+        deadline TEXT,
         completed BOOLEAN,
         user_id INTEGER,
         FOREIGN KEY (user_id) REFERENCES users(id)
@@ -159,16 +160,18 @@ class Project:
     def __init__(self):
         self.title = None
         self.details = None
+        self.deadline = None
         self.completed = False
         self.tasks = []
         self.users = []
 
-    def create_project(self, title, details):
+    def create_project(self, title, details, deadline):
         if current_user:
             self.title = title
             self.details = details
+            self.deadline = deadline
             user_id = current_user.user_id
-            cursor.execute('INSERT INTO projects (title, details, completed, user_id) VALUES (?, ?, 0, ?)', (self.title, self.details, user_id))
+            cursor.execute('INSERT INTO projects (title, details, deadline, completed, user_id) VALUES (?, ?, ?, 0, ?)', (self.title, self.details, self.deadline, user_id))
             conn.commit()
         else:
             print("No user is currently logged in. Cannot create a project.")
@@ -179,7 +182,7 @@ class Project:
             self.title = new_title
             self.details = new_details
             # Update the project in the database using user_id and project_id
-            cursor.execute('UPDATE projects SET title = ?, details = ? WHERE id = ? AND user_id = ?', (self.title, self.details, self.project_id, current_user.user_id))
+            cursor.execute('UPDATE projects SET title = ?, details = ?, deadline = ? WHERE id = ? AND user_id = ?', (self.title, self.details, self.deadline, self.project_id, current_user.user_id))
             conn.commit()
         else:
             print("No user is currently logged in. Cannot modify the project.")
