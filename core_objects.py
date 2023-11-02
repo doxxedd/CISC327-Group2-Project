@@ -85,7 +85,7 @@ class User:
         user_id = self.user_id
         cursor.execute('DELETE FROM tasks WHERE id = ? AND user_id = ?', (task_id, user_id))
         conn.commit()
-        
+
     def remove_task_from_project(self, task_id, project_id):
         # Remove the task from a specific project
         user_id = self.user_id
@@ -119,6 +119,11 @@ class User:
     def update_task(self, task_id, title, details, deadline):
         if self.user_id:
             cursor.execute('UPDATE tasks SET title = ?, details = ?, deadline = ? WHERE id = ? AND user_id = ?', (title, details, deadline, task_id, self.user_id))
+            conn.commit()
+
+    def update_project(self, project_id, title, details, deadline):
+        if self.user_id:
+            cursor.execute('UPDATE projects SET title = ?, details = ?, deadline = ? WHERE id = ? AND user_id = ?', (title, details, deadline, project_id, self.user_id))
             conn.commit()
 
     def login_user(self, username, password):

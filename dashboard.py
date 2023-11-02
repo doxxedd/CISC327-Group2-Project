@@ -416,19 +416,19 @@ def dashboard(stdscr):
                                     # Allow the user to change the project title
                                     new_title = get_input(stdscr, "New Project Title: ", 23, 32)
                                     # Update the project title in the database
-                                    shared.user.modify_project(selected_project_id, new_title, project_details[2])
+                                    shared.user.update_project(selected_project_id, new_title, project_details[2], project_details[3])
                                     stdscr.addstr(26, 32, "Project title modified successfully.", curses.A_BOLD)
                                 elif option == "2":
                                     # Allow the user to change the project details
                                     new_details = get_input(stdscr, "New Project Details: ", 23, 32)
                                     # Update the project details in the database
-                                    shared.user.modify_project(selected_project_id, project_details[1], new_details)
+                                    shared.user.update_project(selected_project_id, project_details[1], new_details, project_details[3])
                                     stdscr.addstr(26, 32, "Project details modified successfully.", curses.A_BOLD)
                                 elif option == "3":
                                     # Allow the user to change the project deadline
                                     new_deadline = display_calendar(stdscr)
                                     # Update the project deadline in the database
-                                    shared.user.modify_project(selected_project_id, project_details[1], project_details[2], new_deadline)
+                                    shared.user.update_project(selected_project_id, project_details[1], project_details[2], new_deadline)
                                     stdscr.addstr(26, 32, "Project deadline modified successfully.", curses.A_BOLD)
                                 elif option == "4":
                                     stdscr.clear()
