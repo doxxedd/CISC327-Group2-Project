@@ -161,6 +161,15 @@ def landing_page(stdscr):
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS project_tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER,
+            task_id INTEGER,
+            FOREIGN KEY (project_id) REFERENCES projects(id),
+            FOREIGN KEY (task_id) REFERENCES tasks(id)
+        )
+    ''')
 
     conn.commit()
     conn.close()

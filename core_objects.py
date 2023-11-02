@@ -8,39 +8,6 @@ conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
 current_user = None
 
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        password TEXT
-    )
-''')
-
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        details TEXT,
-        deadline TEXT,
-        completed BOOLEAN,
-        deleted BOOLEAN,
-        user_id INTEGER,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    )
-''')
-
-# Create Project table
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS projects (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        details TEXT,
-        deadline TEXT,
-        completed BOOLEAN,
-        user_id INTEGER,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    )
-''')
 
 class User:
     def __init__(self):
@@ -58,6 +25,13 @@ class User:
             cursor.execute('SELECT id, title FROM tasks WHERE user_id = ? AND deleted = 0', (self.user_id,))
             tasks = cursor.fetchall()
         return tasks
+    def get_user_projects(self):
+        projects = []
+        if self.user_id:
+            cursor.execute('SELECT id, title FROM projects WHERE user_id = ?', (self.user_id,))
+            tasks = cursor.fetchall()
+        return tasks
+    
     
     def get_task_details(self, task_id):
         task_details = None
@@ -66,11 +40,81 @@ class User:
             task_details = cursor.fetchone()
         return task_details
     
+    def get_project_details(self, project_id):
+        project_details = None
+        if self.user_id:
+            cursor.execute('SELECT id, title, details, deadline FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
+            project_details = cursor.fetchone()
+        return project_details
+    def add_task_to_project(self, project_id, task_id):
+        if self.user_id:
+            # check if the project exists and belongs to the user
+            cursor.execute('SELECT id FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
+            project = cursor.fetchone()
+            if project:
+                # check if the task exists and belongs to the user
+                cursor.execute('SELECT id FROM tasks WHERE id = ? AND user_id = ?', (task_id, self.user_id))
+                task = cursor.fetchone()
+                if task:
+                    # Check if the task is not already associated with the project
+                    cursor.execute('SELECT id FROM project_tasks WHERE project_id = ? AND task_id = ?', (project_id, task_id))
+                    existing_association = cursor.fetchone()
+                    if not existing_association:
+                        # Add the task to the project
+                        cursor.execute('INSERT INTO project_tasks (project_id, task_id) VALUES (?, ?)', (project_id, task_id))
+                        conn.commit()
+                    else:
+                        print("Task is already associated with the project.")
+                else:
+                    print("Task not found or doesn't belong to you.")
+            else:
+                print("Project not found or doesn't belong to you.")
+        else:
+            print("No user is currently logged in. Cannot add a task to the project.")
+    
     def remove_task_from_db(self, task_id):
-        # Remove the task from the database based on its ID
-        user_id = self.user_id  # Get the current user's ID
+        # Get the list of projects associated with the task
+        cursor.execute('SELECT project_id FROM project_tasks WHERE task_id = ?', (task_id,))
+        projects = cursor.fetchall()
+
+        # Remove the task from all associated projects
+        for project_id in projects:
+            self.remove_task_from_project(task_id, project_id[0])
+
+        # Finally, remove the task itself
+        user_id = self.user_id
         cursor.execute('DELETE FROM tasks WHERE id = ? AND user_id = ?', (task_id, user_id))
         conn.commit()
+        
+    def remove_task_from_project(self, task_id, project_id):
+        # Remove the task from a specific project
+        user_id = self.user_id
+        cursor.execute('DELETE FROM project_tasks WHERE task_id = ? AND project_id = ?', (task_id, project_id))
+        conn.commit()
+
+    def get_tasks_in_project(self, project_id):
+        if self.user_id:
+            # Check if the project belongs to the current user
+            cursor.execute('SELECT id FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
+            project = cursor.fetchone()
+            if project:
+                # Retrieve all the task IDs associated with the project
+                cursor.execute('SELECT task_id FROM project_tasks WHERE project_id = ?', (project_id,))
+                task_ids = cursor.fetchall()
+
+                # Fetch and return the details of each associated task
+                associated_tasks = []
+                for task_id in task_ids:
+                    task_id = task_id[0]
+                    task_details = list(self.get_task_details(task_id))
+                    if task_details:
+                        associated_tasks.append(task_details)
+
+                return associated_tasks
+            else:
+                print("Project not found or doesn't belong to you.")
+        else:
+            print("No user is currently logged in.")
     
     def update_task(self, task_id, title, details, deadline):
         if self.user_id:
