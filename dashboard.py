@@ -126,7 +126,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
     # Create Task
     stdscr.addstr(5, 30, f"You chose '{option}'")
     taskoptions = ["Create Task", "Modify Task", "Remove Task"]
-    projectoptions = ["Create Project", "Modify Project", "Remove Project"]
+    projectoptions = ["Create Project", "Modify Project", "Remove Project", "Logout"]
     detail_form = [
         (f"{field1}: ", ""),
         (f"{field2}: ", ""),
@@ -161,6 +161,79 @@ def create_field_page(stdscr, option, field1, field2, field3):
         stdscr.addstr(18, 30, "invalid field(s)!", curses.A_BOLD)
     stdscr.clear()
     stdscr.refresh()
+def task_modifier(stdscr):
+    tasks = shared.user.get_user_tasks()  # Fetch user's tasks
+    if tasks:
+        stdscr.addstr(5, 30, "Select a task to modify:")
+        for i, task in enumerate(tasks, start=1):
+            stdscr.addstr(5 + i, 32, f"{i}. {task[1]}")
+        stdscr.refresh()
+        # Get user input for task selection
+        task_selection = get_input(stdscr, "Enter the number of the task to modify (or press 'Enter' to go back): ", 10 + len(tasks), 35)
+        stdscr.clear()   
+        if task_selection.isnumeric():
+            task_selection = int(task_selection)
+            if 1 <= task_selection <= len(tasks):
+                # Fetch task details
+                selected_task_id = tasks[task_selection - 1][0]
+                task_details = list(shared.user.get_task_details(selected_task_id))
+                if task_details:
+                    # Display task details and get updated values from the user
+                    stdscr.addstr(10, 30, "Task Details:")
+                    stdscr.addstr(11, 32, f"Title: {task_details[1]}")
+                    stdscr.addstr(12, 32, f"Details: {task_details[2]}")
+                    stdscr.addstr(13, 32, f"Deadline: {task_details[3]}")
+
+                    new_title = get_input(stdscr, "New Title (or press 'Enter' to keep the current value): ", 15, 32)
+                    new_details = get_input(stdscr, "New Details (or press 'Enter' to keep the current value): ", 16, 32)
+                    new_deadline = display_calendar(stdscr)
+
+                    # Check if input is empty (i.e., user pressed 'Enter')
+                    new_tasks = task_details
+                    if new_title:
+                        new_tasks[1] = new_title
+                    if new_details:
+                        new_tasks[2] = new_details
+                    if new_deadline:
+                        new_tasks[3] = new_deadline
+
+                    # Update the task
+                    shared.user.update_task(selected_task_id, new_tasks[1], new_tasks[2], new_tasks[3])
+                    stdscr.addstr(19, 30, "Task modified successfully.", curses.A_BOLD)
+                else:
+                    stdscr.addstr(19, 30, "Task not found or doesn't belong to you.", curses.A_BOLD)
+            else:
+                stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
+                
+        else:
+            stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
+    else:
+        stdscr.addstr(5, 30, "No tasks found to modify.")
+
+def task_deleter(stdscr):
+    tasks = shared.user.get_user_tasks()  # Fetch user's tasks
+    if tasks:
+        stdscr.addstr(5, 30, "Select a task to modify:")
+        for i, task in enumerate(tasks, start=1):
+            stdscr.addstr(5 + i, 32, f"{i}. {task[1]}")
+        stdscr.refresh()
+        # Get user input for task selection
+        task_selection = get_input(stdscr, "Enter the number of the task to delete(or press 'Enter' to go back): ", 10 + len(tasks), 35)
+        stdscr.clear()   
+        if task_selection.isnumeric():
+            task_selection = int(task_selection)
+            if 1 <= task_selection <= len(tasks):
+                # Fetch task details
+                selected_task_id = tasks[task_selection - 1][0]
+                shared.user.remove_task_from_db(selected_task_id)
+                stdscr.addstr(19, 30, "Task deleted successfully.", curses.A_BOLD)
+            else:
+                time.sleep
+                stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
+        else:
+            stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
+    else:
+        stdscr.addstr(5, 30, "No tasks found to delete.")
 
 def task_viewer(stdscr):
     tasks = shared.user.get_user_tasks()  # Fetch user's tasks
@@ -217,6 +290,162 @@ def task_viewer(stdscr):
             selected_task -= 1
         elif key == curses.KEY_DOWN and selected_task < len(tasks) - 1:
             selected_task += 1
+def project_viewer(stdscr):
+    projects = shared.user.get_user_projects()  # Fetch user's projects
+    if projects:
+        stdscr.addstr(5, 30, "Your Projects:")
+        for i, project in enumerate(projects, start=1):
+            stdscr.addstr(5 + i, 32, f"{i}. {project[1]}")
+        stdscr.refresh()
+        # Get user input for project selection
+        project_selection = get_input(stdscr, "Enter the number of the project to view (or press 'Enter' to go back): ", 10 + len(projects), 35)
+        stdscr.clear()
+        if project_selection.isnumeric():
+            project_selection = int(project_selection)
+            if 1 <= project_selection <= len(projects):
+                # Fetch project details
+                selected_project_id = projects[project_selection - 1][0]
+                project_details = shared.user.get_project_details(selected_project_id)
+                if project_details:
+                    # Display project details
+                    stdscr.addstr(10, 30, "Project Details:")
+                    stdscr.addstr(11, 32, f"Title: {project_details[1]}")
+                    stdscr.addstr(12, 32, f"Details: {project_details[2]}")
+                    stdscr.addstr(13, 32, f"Deadline: {project_details[3]}")
+                    stdscr.addstr(14, 32, "Tasks in this project:")
+
+                    # Fetch tasks associated with the project
+                    project_tasks = shared.user.get_tasks_in_project(selected_project_id)
+                    for i, task in enumerate(project_tasks, start=1):
+                        stdscr.addstr(14 + i, 34, f"{i}. {task[1]}")
+
+                    stdscr.addstr(16 + len(project_tasks), 32, "Press 'Enter' to go back.")
+                    stdscr.refresh()
+
+                    key = stdscr.getch()
+
+                    if key == 10:  # Enter key (go back)
+                        pass
+                else:
+                    stdscr.addstr(14, 32, "Project not found or doesn't belong to you.")
+            else:
+                stdscr.addstr(14, 32, "Invalid project selection.")
+        else:
+            stdscr.addstr(14, 32, "Invalid input. Please enter a valid project number or 'B' to go back.", curses.A_BOLD)
+    else:
+        stdscr.addstr(5, 30, "No projects found.")
+
+def project_modifier(stdscr):
+    stdscr.addstr(5, 30, "You chose 'Modify Project'")
+    stdscr.addstr(6, 32, "Select a project to modify:")
+
+    # Fetch the user's projects
+    projects = shared.user.get_user_projects()
+
+    if projects:
+        for i, project in enumerate(projects, start=1):
+            stdscr.addstr(6 + i, 32, f"{i}. {project[1]}")
+        stdscr.refresh()
+
+        # Get user input for project selection
+        project_selection = get_input(stdscr, "Enter the number of the project to modify (or press 'Enter' to go back): ", 7 + len(projects), 32)
+        stdscr.clear()
+
+        if project_selection.isnumeric():
+            project_selection = int(project_selection)
+            if 1 <= project_selection <= len(projects):
+                # Fetch project details
+                selected_project_id = projects[project_selection - 1][0]
+                project_details = list(shared.user.get_project_details(selected_project_id))
+
+                if project_details:
+                    # Display project details and allow the user to modify them
+                    stdscr.addstr(10, 30, "Project Details:")
+                    stdscr.addstr(11, 32, f"Title: {project_details[1]}")
+                    stdscr.addstr(12, 32, f"Details: {project_details[2]}")
+                    stdscr.addstr(13, 32, f"Deadline: {project_details[3]}")
+                    stdscr.addstr(15, 32, "1. Change Project Title")
+                    stdscr.addstr(16, 32, "2. Change Project Details")
+                    stdscr.addstr(17, 32, "3. Change Project Deadline")
+                    stdscr.addstr(18, 32, "4. Add Tasks to Project")
+                    stdscr.addstr(19, 32, "5. Back")
+                    stdscr.refresh()
+
+                    option = get_input(stdscr, "Enter your choice: ", 21, 32)
+
+                    if option == "1":
+                        # Allow the user to change the project title
+                        new_title = get_input(stdscr, "New Project Title: ", 23, 32)
+                        # Update the project title in the database
+                        shared.user.update_project(selected_project_id, new_title, project_details[2], project_details[3])
+                        stdscr.addstr(26, 32, "Project title modified successfully.", curses.A_BOLD)
+                    elif option == "2":
+                        # Allow the user to change the project details
+                        new_details = get_input(stdscr, "New Project Details: ", 23, 32)
+                        # Update the project details in the database
+                        shared.user.update_project(selected_project_id, project_details[1], new_details, project_details[3])
+                        stdscr.addstr(26, 32, "Project details modified successfully.", curses.A_BOLD)
+                    elif option == "3":
+                        # Allow the user to change the project deadline
+                        new_deadline = display_calendar(stdscr)
+                        # Update the project deadline in the database
+                        shared.user.update_project(selected_project_id, project_details[1], project_details[2], new_deadline)
+                        stdscr.addstr(26, 32, "Project deadline modified successfully.", curses.A_BOLD)
+                    elif option == "4":
+                        stdscr.clear()
+                        stdscr.addstr(5, 30, "You chose 'Add Tasks to Project'")
+                        
+                        # Display a list of available tasks
+                        tasks = shared.user.get_user_tasks()  # Fetch user's tasks
+                        if tasks:
+                            stdscr.addstr(6, 32, "Select tasks to add to the project (use space to select/deselect, press 'Enter' when done):")
+                            task_selections = [False] * len(tasks)  # Initialize task selections as all False
+                            current_row = 7
+
+                            while True:
+                                for i, (task_id, task_title) in enumerate(tasks):
+                                    checkbox = "[X]" if task_selections[i] else "[ ]"
+                                    stdscr.addstr(current_row + i, 32, f"{checkbox} {i + 1}. {task_title}")
+
+                                stdscr.refresh()
+                                key = stdscr.getch()
+
+                                if key == ord('q'):
+                                    break  # Exit if the user presses 'q'
+                                elif key == 10:
+                                    # User pressed 'Enter', finish task selection
+                                    break
+                                elif key in [curses.KEY_ENTER, 10]:
+                                    # Handle the 'Enter' key as well
+                                    break
+                                elif 0 <= key - ord('1') < len(tasks):
+                                    # Toggle task selection when a number key is pressed
+                                    task_index = key - ord('1')
+                                    task_selections[task_index] = not task_selections[task_index]
+
+                            # Add the selected tasks to the project
+                            selected_tasks = [task_id for i, (task_id, _) in enumerate(tasks) if task_selections[i]]
+                            for task_id in selected_tasks:
+                                shared.user.add_task_to_project(selected_project_id, task_id)
+                            
+                            stdscr.addstr(7 + len(tasks), 32, "Tasks added to the project successfully.", curses.A_BOLD)
+                        else:
+                            stdscr.addstr(6, 32, "No tasks found to add to the project.")
+                        
+                        stdscr.refresh()
+                    elif option == "5":
+                        # User chooses to go back
+                        pass
+                    else:
+                        stdscr.addstr(26, 32, "Invalid choice. Please enter a valid option.", curses.A_BOLD)
+                else:
+                    stdscr.addstr(26, 32, "Project not found or doesn't belong to you.", curses.A_BOLD)
+            else:
+                stdscr.addstr(26, 32, "Invalid project selection.", curses.A_BOLD)
+        else:
+            stdscr.addstr(26, 32, "Invalid input. Please enter a valid project number or 'Enter' to go back.", curses.A_BOLD)
+    else:
+        stdscr.addstr(6, 32, "No projects found to modify.")
 
 def dashboard(stdscr):
     """
@@ -300,241 +529,24 @@ def dashboard(stdscr):
             if selected_row == 0:
                 create_field_page(stdscr, "Create Task", "title", "details", "deadline")
             elif selected_row == 1:
-                tasks = shared.user.get_user_tasks()  # Fetch user's tasks
-                if tasks:
-                    stdscr.addstr(5, 30, "Select a task to modify:")
-                    for i, task in enumerate(tasks, start=1):
-                        stdscr.addstr(5 + i, 32, f"{i}. {task[1]}")
-                    stdscr.refresh()
-                    # Get user input for task selection
-                    task_selection = get_input(stdscr, "Enter the number of the task to modify (or press 'Enter' to go back): ", 10 + len(tasks), 35)
-                    stdscr.clear()   
-                    if task_selection.isnumeric():
-                        task_selection = int(task_selection)
-                        if 1 <= task_selection <= len(tasks):
-                            # Fetch task details
-                            selected_task_id = tasks[task_selection - 1][0]
-                            task_details = list(shared.user.get_task_details(selected_task_id))
-                            if task_details:
-                                # Display task details and get updated values from the user
-                                stdscr.addstr(10, 30, "Task Details:")
-                                stdscr.addstr(11, 32, f"Title: {task_details[1]}")
-                                stdscr.addstr(12, 32, f"Details: {task_details[2]}")
-                                stdscr.addstr(13, 32, f"Deadline: {task_details[3]}")
-
-                                new_title = get_input(stdscr, "New Title (or press 'Enter' to keep the current value): ", 15, 32)
-                                new_details = get_input(stdscr, "New Details (or press 'Enter' to keep the current value): ", 16, 32)
-                                new_deadline = display_calendar(stdscr)
-
-                                # Check if input is empty (i.e., user pressed 'Enter')
-                                new_tasks = task_details
-                                if new_title:
-                                    new_tasks[1] = new_title
-                                if new_details:
-                                    new_tasks[2] = new_details
-                                if new_deadline:
-                                    new_tasks[3] = new_deadline
-
-                                # Update the task
-                                shared.user.update_task(selected_task_id, new_tasks[1], new_tasks[2], new_tasks[3])
-                                stdscr.addstr(19, 30, "Task modified successfully.", curses.A_BOLD)
-                            else:
-                                stdscr.addstr(19, 30, "Task not found or doesn't belong to you.", curses.A_BOLD)
-                        else:
-                            stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
-                            
-                    else:
-                        stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
-                else:
-                    stdscr.addstr(5, 30, "No tasks found to modify.")
-                    
+                task_modifier(stdscr)                   
             elif selected_row == 2:
-                tasks = shared.user.get_user_tasks()  # Fetch user's tasks
-                if tasks:
-                    stdscr.addstr(5, 30, "Select a task to modify:")
-                    for i, task in enumerate(tasks, start=1):
-                        stdscr.addstr(5 + i, 32, f"{i}. {task[1]}")
-                    stdscr.refresh()
-                    # Get user input for task selection
-                    task_selection = get_input(stdscr, "Enter the number of the task to delete(or press 'Enter' to go back): ", 10 + len(tasks), 35)
-                    stdscr.clear()   
-                    if task_selection.isnumeric():
-                        task_selection = int(task_selection)
-                        if 1 <= task_selection <= len(tasks):
-                            # Fetch task details
-                            selected_task_id = tasks[task_selection - 1][0]
-                            shared.user.remove_task_from_db(selected_task_id)
-                            stdscr.addstr(19, 30, "Task deleted successfully.", curses.A_BOLD)
-                        else:
-                            time.sleep
-                            stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
-                    else:
-                        stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
-                else:
-                    stdscr.addstr(5, 30, "No tasks found to delete.")
+                task_deleter(stdscr)
             elif selected_row == 3:
                 create_field_page(stdscr, "Create Project", "title", "details", "deadline")
             elif selected_row == 4:
-                stdscr.addstr(5, 30, "You chose 'Modify Project'")
-                stdscr.addstr(6, 32, "Select a project to modify:")
-
-                # Fetch the user's projects
-                projects = shared.user.get_user_projects()
-
-                if projects:
-                    for i, project in enumerate(projects, start=1):
-                        stdscr.addstr(6 + i, 32, f"{i}. {project[1]}")
-                    stdscr.refresh()
-
-                    # Get user input for project selection
-                    project_selection = get_input(stdscr, "Enter the number of the project to modify (or press 'Enter' to go back): ", 7 + len(projects), 32)
-                    stdscr.clear()
-
-                    if project_selection.isnumeric():
-                        project_selection = int(project_selection)
-                        if 1 <= project_selection <= len(projects):
-                            # Fetch project details
-                            selected_project_id = projects[project_selection - 1][0]
-                            project_details = list(shared.user.get_project_details(selected_project_id))
-
-                            if project_details:
-                                # Display project details and allow the user to modify them
-                                stdscr.addstr(10, 30, "Project Details:")
-                                stdscr.addstr(11, 32, f"Title: {project_details[1]}")
-                                stdscr.addstr(12, 32, f"Details: {project_details[2]}")
-                                stdscr.addstr(13, 32, f"Deadline: {project_details[3]}")
-                                stdscr.addstr(15, 32, "1. Change Project Title")
-                                stdscr.addstr(16, 32, "2. Change Project Details")
-                                stdscr.addstr(17, 32, "3. Change Project Deadline")
-                                stdscr.addstr(18, 32, "4. Add Tasks to Project")
-                                stdscr.addstr(19, 32, "5. Back")
-                                stdscr.refresh()
-
-                                option = get_input(stdscr, "Enter your choice: ", 21, 32)
-
-                                if option == "1":
-                                    # Allow the user to change the project title
-                                    new_title = get_input(stdscr, "New Project Title: ", 23, 32)
-                                    # Update the project title in the database
-                                    shared.user.update_project(selected_project_id, new_title, project_details[2], project_details[3])
-                                    stdscr.addstr(26, 32, "Project title modified successfully.", curses.A_BOLD)
-                                elif option == "2":
-                                    # Allow the user to change the project details
-                                    new_details = get_input(stdscr, "New Project Details: ", 23, 32)
-                                    # Update the project details in the database
-                                    shared.user.update_project(selected_project_id, project_details[1], new_details, project_details[3])
-                                    stdscr.addstr(26, 32, "Project details modified successfully.", curses.A_BOLD)
-                                elif option == "3":
-                                    # Allow the user to change the project deadline
-                                    new_deadline = display_calendar(stdscr)
-                                    # Update the project deadline in the database
-                                    shared.user.update_project(selected_project_id, project_details[1], project_details[2], new_deadline)
-                                    stdscr.addstr(26, 32, "Project deadline modified successfully.", curses.A_BOLD)
-                                elif option == "4":
-                                    stdscr.clear()
-                                    stdscr.addstr(5, 30, "You chose 'Add Tasks to Project'")
-                                    
-                                    # Display a list of available tasks
-                                    tasks = shared.user.get_user_tasks()  # Fetch user's tasks
-                                    if tasks:
-                                        stdscr.addstr(6, 32, "Select tasks to add to the project (use space to select/deselect, press 'Enter' when done):")
-                                        task_selections = [False] * len(tasks)  # Initialize task selections as all False
-                                        current_row = 7
-
-                                        while True:
-                                            for i, (task_id, task_title) in enumerate(tasks):
-                                                checkbox = "[X]" if task_selections[i] else "[ ]"
-                                                stdscr.addstr(current_row + i, 32, f"{checkbox} {i + 1}. {task_title}")
-
-                                            stdscr.refresh()
-                                            key = stdscr.getch()
-
-                                            if key == ord('q'):
-                                                break  # Exit if the user presses 'q'
-                                            elif key == 10:
-                                                # User pressed 'Enter', finish task selection
-                                                break
-                                            elif key in [curses.KEY_ENTER, 10]:
-                                                # Handle the 'Enter' key as well
-                                                break
-                                            elif 0 <= key - ord('1') < len(tasks):
-                                                # Toggle task selection when a number key is pressed
-                                                task_index = key - ord('1')
-                                                task_selections[task_index] = not task_selections[task_index]
-
-                                        # Add the selected tasks to the project
-                                        selected_tasks = [task_id for i, (task_id, _) in enumerate(tasks) if task_selections[i]]
-                                        for task_id in selected_tasks:
-                                            shared.user.add_task_to_project(selected_project_id, task_id)
-                                        
-                                        stdscr.addstr(7 + len(tasks), 32, "Tasks added to the project successfully.", curses.A_BOLD)
-                                    else:
-                                        stdscr.addstr(6, 32, "No tasks found to add to the project.")
-                                    
-                                    stdscr.refresh()
-                                elif option == "5":
-                                    # User chooses to go back
-                                    pass
-                                else:
-                                    stdscr.addstr(26, 32, "Invalid choice. Please enter a valid option.", curses.A_BOLD)
-                            else:
-                                stdscr.addstr(26, 32, "Project not found or doesn't belong to you.", curses.A_BOLD)
-                        else:
-                            stdscr.addstr(26, 32, "Invalid project selection.", curses.A_BOLD)
-                    else:
-                        stdscr.addstr(26, 32, "Invalid input. Please enter a valid project number or 'Enter' to go back.", curses.A_BOLD)
-                else:
-                    stdscr.addstr(6, 32, "No projects found to modify.")
+                project_modifier(stdscr)
             elif selected_row == 5:
                 stdscr.addstr(5, 30, "You chose 'Remove Project'")
-
             elif selected_row == 6:
                 task_viewer(stdscr)
-
             elif selected_row == 7:
-                projects = shared.user.get_user_projects()  # Fetch user's projects
-                if projects:
-                    stdscr.addstr(5, 30, "Your Projects:")
-                    for i, project in enumerate(projects, start=1):
-                        stdscr.addstr(5 + i, 32, f"{i}. {project[1]}")
-                    stdscr.refresh()
-                    # Get user input for project selection
-                    project_selection = get_input(stdscr, "Enter the number of the project to view (or press 'Enter' to go back): ", 10 + len(projects), 35)
-                    stdscr.clear()
-                    if project_selection.isnumeric():
-                        project_selection = int(project_selection)
-                        if 1 <= project_selection <= len(projects):
-                            # Fetch project details
-                            selected_project_id = projects[project_selection - 1][0]
-                            project_details = shared.user.get_project_details(selected_project_id)
-                            if project_details:
-                                # Display project details
-                                stdscr.addstr(10, 30, "Project Details:")
-                                stdscr.addstr(11, 32, f"Title: {project_details[1]}")
-                                stdscr.addstr(12, 32, f"Details: {project_details[2]}")
-                                stdscr.addstr(13, 32, f"Deadline: {project_details[3]}")
-                                stdscr.addstr(14, 32, "Tasks in this project:")
+                project_viewer(stdscr)
+            elif selected_row == 8:
+                if current_user:
+                    current_user.logout_user()
 
-                                # Fetch tasks associated with the project
-                                project_tasks = shared.user.get_tasks_in_project(selected_project_id)
-                                for i, task in enumerate(project_tasks, start=1):
-                                    stdscr.addstr(14 + i, 34, f"{i}. {task[1]}")
 
-                                stdscr.addstr(16 + len(project_tasks), 32, "Press 'Enter' to go back.")
-                                stdscr.refresh()
-
-                                key = stdscr.getch()
-
-                                if key == 10:  # Enter key (go back)
-                                    pass
-                            else:
-                                stdscr.addstr(14, 32, "Project not found or doesn't belong to you.")
-                        else:
-                            stdscr.addstr(14, 32, "Invalid project selection.")
-                    else:
-                        stdscr.addstr(14, 32, "Invalid input. Please enter a valid project number or 'B' to go back.", curses.A_BOLD)
-                else:
-                    stdscr.addstr(5, 30, "No projects found.")
         
             
 
