@@ -10,13 +10,6 @@ import datetime
 import calendar
 import time
 
-def update_live_clock(stdscr):
-    while True:
-        current_time = datetime.datetime.now().strftime('%H:%M:%S')
-        stdscr.addstr(0, 0, f'Time: {current_time}', curses.color_pair(2))
-        stdscr.refresh()
-        time.sleep(1)
-
 def display_form_element(stdscr, prompt, value, row, col):
     """
     Function to displays element that needs user input
@@ -30,6 +23,11 @@ def display_form_element(stdscr, prompt, value, row, col):
     stdscr.addstr(row, col + len(prompt), value)
 
 def display_calendar(stdscr):
+    """Function that displays calender when selecting deadline
+
+    Returns:
+        string: selected date
+    """
     stdscr.clear()
     stdscr.refresh()
 
@@ -89,7 +87,6 @@ def display_calendar(stdscr):
     return selected_date
 
 
-
 def get_input(stdscr, prompt, row, col):
     """
     Function to allow user to type input
@@ -130,8 +127,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
     detail_form = [
         (f"{field1}: ", ""),
         (f"{field2}: ", ""),
-        (f"{field3}: ", "")
-    ]
+        (f"{field3}: ", "")]
 
     current_row = 10
     for label, value in detail_form:
@@ -163,6 +159,8 @@ def create_field_page(stdscr, option, field1, field2, field3):
     stdscr.refresh()
 
 def task_modifier(stdscr):
+    """Displays and updates task details (updates db too)
+    """
     tasks = shared.user.get_user_tasks()  # Fetch user's tasks
     if tasks:
         stdscr.addstr(5, 30, "Select a task to modify:")
@@ -212,6 +210,8 @@ def task_modifier(stdscr):
         stdscr.addstr(5, 30, "No tasks found to modify.")
 
 def task_deleter(stdscr):
+    """Removes task from displaying and db
+    """
     tasks = shared.user.get_user_tasks()  # Fetch user's tasks
     if tasks:
         stdscr.addstr(5, 30, "Select a task to modify:")
@@ -237,6 +237,8 @@ def task_deleter(stdscr):
         stdscr.addstr(5, 30, "No tasks found to delete.")
 
 def task_viewer(stdscr):
+    """allows user to select and view a task
+    """
     tasks = shared.user.get_user_tasks()  # Fetch user's tasks
 
     if not tasks:
@@ -291,7 +293,10 @@ def task_viewer(stdscr):
             selected_task -= 1
         elif key == curses.KEY_DOWN and selected_task < len(tasks) - 1:
             selected_task += 1
+
 def project_viewer(stdscr):
+    """allows user to select and view a project
+    """
     projects = shared.user.get_user_projects()  # Fetch user's projects
     if projects:
         stdscr.addstr(5, 30, "Your Projects:")
@@ -337,6 +342,8 @@ def project_viewer(stdscr):
         stdscr.addstr(5, 30, "No projects found.")
 
 def project_modifier(stdscr):
+    """Displays and updates project details (updates db too)
+    """
     stdscr.addstr(5, 30, "You chose 'Modify Project'")
     stdscr.addstr(6, 32, "Select a project to modify:")
 
@@ -460,8 +467,6 @@ def dashboard(stdscr):
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-   
-
     options = ["Create Task", "Modify Task", "Remove Task",
                "Create Project", "Modify Project", "Remove Project", "View Tasks", "View Projects", "Logout"]
 
@@ -472,8 +477,6 @@ def dashboard(stdscr):
     while True:
         stdscr.clear()
         stdscr.refresh()
-        
-
 
         # Display the menu options
         height, width = stdscr.getmaxyx()
@@ -486,7 +489,6 @@ def dashboard(stdscr):
                 stdscr.attroff(curses.color_pair(1))
             else:
                 stdscr.addstr(y, x, option)
-        
 
         # Display tasks in the timeline bar
         taskslist = shared.user.get_user_tasks()
@@ -500,7 +502,6 @@ def dashboard(stdscr):
             newlist[taskinfo[0]] = taskinfo[1]
         sorted_list = sorted(newlist.items(), key=lambda x:x[1])
         
-
         # Display tasks in the timeline bar
         if sorted_list:
             max_displayed_tasks = min(curses.LINES - 2, len(sorted_list))
@@ -546,8 +547,3 @@ def dashboard(stdscr):
             elif selected_row == 8:
                 if shared.user:
                     shared.user.logout_user()
-
-
-        
-            
-
