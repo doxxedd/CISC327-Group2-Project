@@ -13,6 +13,12 @@ import shared
 
 
 def register_user(username, password):
+    """
+    Function to register user into system
+    :param username: user's username
+    :param password: user's password
+    :return: True if successful, False otherwise
+    """
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
@@ -109,9 +115,15 @@ def show_time(stdscr):
     stdscr.addstr(time_y, time_x, current_time, curses.color_pair(2))
 
 def validate_user(username, password):
+    """
+    Function to validate user when logging in
+    :param username: user's username
+    :param password: user's password
+    :return: True if verified, False otherwise
+    """
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-
+    # validate from database
     cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
     user = cursor.fetchone()
 
