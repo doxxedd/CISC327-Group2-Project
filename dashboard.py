@@ -544,8 +544,8 @@ def dashboard(stdscr):
             elif selected_row == 7:
                 project_viewer(stdscr)
             elif selected_row == 8:
-                if current_user:
-                    current_user.logout_user()
+                if shared.user:
+                    shared.user.logout_user()
 
 
         
