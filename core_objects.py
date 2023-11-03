@@ -1,5 +1,4 @@
 import datetime
-
 import sqlite3
 from shared import user
 """Backend classes to be used in next iterations of the prototype

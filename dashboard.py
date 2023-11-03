@@ -126,7 +126,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
     # Create Task
     stdscr.addstr(5, 30, f"You chose '{option}'")
     taskoptions = ["Create Task", "Modify Task", "Remove Task"]
-    projectoptions = ["Create Project", "Modify Project", "Remove Project", "Logout"]
+    projectoptions = ["Create Project", "Modify Project", "Remove Project"]
     detail_form = [
         (f"{field1}: ", ""),
         (f"{field2}: ", ""),
@@ -161,6 +161,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
         stdscr.addstr(18, 30, "invalid field(s)!", curses.A_BOLD)
     stdscr.clear()
     stdscr.refresh()
+
 def task_modifier(stdscr):
     tasks = shared.user.get_user_tasks()  # Fetch user's tasks
     if tasks:
@@ -462,7 +463,7 @@ def dashboard(stdscr):
    
 
     options = ["Create Task", "Modify Task", "Remove Task",
-               "Create Project", "Modify Project", "Remove Project", "View Tasks", "View Projects"]
+               "Create Project", "Modify Project", "Remove Project", "View Tasks", "View Projects", "Logout"]
 
     selected_row = 0
 
