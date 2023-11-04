@@ -24,27 +24,27 @@ class User:
             cursor.execute('SELECT id, title FROM tasks WHERE user_id = ? AND deleted = 0', (self.user_id,))
             tasks = cursor.fetchall()
         return tasks
+
     def get_user_projects(self):
-        projects = []
         if self.user_id:
             cursor.execute('SELECT id, title FROM projects WHERE user_id = ?', (self.user_id,))
             tasks = cursor.fetchall()
         return tasks
-    
-    
+
     def get_task_details(self, task_id):
         task_details = None
         if self.user_id:
             cursor.execute('SELECT id, title, details, deadline FROM tasks WHERE id = ? AND user_id = ? AND deleted = 0', (task_id, self.user_id))
             task_details = cursor.fetchone()
         return task_details
-    
+
     def get_project_details(self, project_id):
         project_details = None
         if self.user_id:
             cursor.execute('SELECT id, title, details, deadline FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
             project_details = cursor.fetchone()
         return project_details
+
     def add_task_to_project(self, project_id, task_id):
         if self.user_id:
             # check if the project exists and belongs to the user
@@ -70,7 +70,7 @@ class User:
                 print("Project not found or doesn't belong to you.")
         else:
             print("No user is currently logged in. Cannot add a task to the project.")
-    
+
     def remove_task_from_db(self, task_id):
         # Get the list of projects associated with the task
         cursor.execute('SELECT project_id FROM project_tasks WHERE task_id = ?', (task_id,))
@@ -133,7 +133,7 @@ class User:
                 print("Project not found or doesn't belong to you.")
         else:
             print("No user is currently logged in.")
-    
+
     def update_task(self, task_id, title, details, deadline):
         if self.user_id:
             cursor.execute('UPDATE tasks SET title = ?, details = ?, deadline = ? WHERE id = ? AND user_id = ?', (title, details, deadline, task_id, self.user_id))
@@ -155,11 +155,10 @@ class User:
             current_user = self  # Set the current_user to the logged-in user
             return True
         return False
-    
+
     def logout_user(self):
         global current_user
         current_user = None  # Set current_user to None on logout
-        
 
 
 class Data:
@@ -201,7 +200,6 @@ class Task:
             conn.commit()
         else:
             print("No user is currently logged in. Cannot modify the task.")
-
 
     def complete_task(self):
         self.completed = True
@@ -254,10 +252,10 @@ class Project:
         else:
             print("No user is currently logged in. Cannot modify the project.")
 
-    def complete_project(self, name):
+    def complete_project(self):
         self.completed = True
 
-    def is_project_complete(self, project_name):
+    def is_project_complete(self):
         if self.completed:
             print(self.title, " is complete")
         else:
