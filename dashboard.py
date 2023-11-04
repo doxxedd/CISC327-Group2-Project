@@ -156,12 +156,13 @@ def create_field_page(stdscr, option, field1, field2, field3):
         if option == "Create Project":
             project = core_objects.Project()
             project.create_project(field1, field2, field3)
-            return "project Created Successfully"
+            return "Project Created Successfully"
 
     if field1 == "test" and field2 == "test" and field3 == "test":
         stdscr.addstr(18, 35, "success!", curses.A_BOLD)
     else:
         stdscr.addstr(18, 30, "invalid field(s)!", curses.A_BOLD)
+        return "Task not created"
     stdscr.clear()
     stdscr.refresh()
 
@@ -218,6 +219,7 @@ def task_modifier(stdscr):
             stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(5, 30, "No tasks found to modify.")
+        return "No tasks found to modify"
 
 
 def task_deleter(stdscr):
@@ -247,6 +249,7 @@ def task_deleter(stdscr):
             stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(5, 30, "No tasks found to delete.")
+        return "No Tasks Found to Delete"
 
 
 def task_viewer(stdscr):
@@ -294,6 +297,7 @@ def task_viewer(stdscr):
                 stdscr.addstr(4, 0, f"Deadline: {task_details[3]}")
             else:
                 stdscr.addstr(2, 0, "Task not found or doesn't belong to you.")
+                return "Task Not Found"
 
             stdscr.addstr(7, 0, "Press 'Enter' to go back to the task list.")
             stdscr.refresh()
@@ -336,6 +340,7 @@ def project_deleter(stdscr):
             stdscr.addstr(14, 32, "Invalid input. Please enter a valid project number or 'B' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(5, 30, "No projects found.")
+        return "No Projects Found to Delete"
 
 
 def project_viewer(stdscr):
@@ -374,6 +379,7 @@ def project_viewer(stdscr):
                     stdscr.refresh()
 
                     key = stdscr.getch()
+                    return "Project Viewed Successfully"
 
                     if key == 10:  # Enter key (go back)
                         pass
@@ -385,6 +391,7 @@ def project_viewer(stdscr):
             stdscr.addstr(14, 32, "Invalid input. Please enter a valid project number or 'B' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(5, 30, "No projects found.")
+        return "Project Not Found"
 
 
 def project_modifier(stdscr):
@@ -504,6 +511,7 @@ def project_modifier(stdscr):
             stdscr.addstr(26, 32, "Invalid input. Please enter a valid project number or 'Enter' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(6, 32, "No projects found to modify.")
+        return "Project Not Found to Modify"
 
 
 def dashboard(stdscr):
