@@ -10,6 +10,8 @@ import datetime
 import calendar
 import time
 
+testresult = []
+
 def display_form_element(stdscr, prompt, value, row, col):
     """
     Function to displays element that needs user input
@@ -87,6 +89,7 @@ def display_calendar(stdscr):
     return selected_date
 
 
+
 def get_input(stdscr, prompt, row, col):
     """
     Function to allow user to type input
@@ -127,7 +130,8 @@ def create_field_page(stdscr, option, field1, field2, field3):
     detail_form = [
         (f"{field1}: ", ""),
         (f"{field2}: ", ""),
-        (f"{field3}: ", "")]
+        (f"{field3}: ", "")
+    ]
 
     current_row = 10
     for label, value in detail_form:
@@ -142,6 +146,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
         if option == "Create Task":
             task = core_objects.Task()
             task.create_task(field1, field2, field3)
+            return "Task Created Successfully"
 
     if option in projectoptions:
         field1 = get_input(stdscr, "", 10, 35)
@@ -150,6 +155,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
         if option == "Create Project":
             project = core_objects.Project()
             project.create_project(field1, field2, field3)
+            return "project Created Successfully"
 
     if field1 == "test" and field2 == "test" and field3 == "test":
         stdscr.addstr(18, 35, "success!", curses.A_BOLD)
@@ -159,7 +165,8 @@ def create_field_page(stdscr, option, field1, field2, field3):
     stdscr.refresh()
 
 def task_modifier(stdscr):
-    """Displays and updates task details (updates db too)
+    """
+    Displays and updates task details (updates db too)
     """
     tasks = shared.user.get_user_tasks()  # Fetch user's tasks
     if tasks:
@@ -199,6 +206,7 @@ def task_modifier(stdscr):
                     # Update the task
                     shared.user.update_task(selected_task_id, new_tasks[1], new_tasks[2], new_tasks[3])
                     stdscr.addstr(19, 30, "Task modified successfully.", curses.A_BOLD)
+                    return "Task Modified Successfully"
                 else:
                     stdscr.addstr(19, 30, "Task not found or doesn't belong to you.", curses.A_BOLD)
             else:
@@ -210,7 +218,8 @@ def task_modifier(stdscr):
         stdscr.addstr(5, 30, "No tasks found to modify.")
 
 def task_deleter(stdscr):
-    """Removes task from displaying and db
+    """
+    Removes task from displaying and db
     """
     tasks = shared.user.get_user_tasks()  # Fetch user's tasks
     if tasks:
@@ -228,6 +237,7 @@ def task_deleter(stdscr):
                 selected_task_id = tasks[task_selection - 1][0]
                 shared.user.remove_task_from_db(selected_task_id)
                 stdscr.addstr(19, 30, "Task deleted successfully.", curses.A_BOLD)
+                return "Task Deleted Successfully"
             else:
                 time.sleep
                 stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
@@ -237,7 +247,8 @@ def task_deleter(stdscr):
         stdscr.addstr(5, 30, "No tasks found to delete.")
 
 def task_viewer(stdscr):
-    """allows user to select and view a task
+    """
+    Allows user to select and view a task
     """
     tasks = shared.user.get_user_tasks()  # Fetch user's tasks
 
@@ -293,9 +304,38 @@ def task_viewer(stdscr):
             selected_task -= 1
         elif key == curses.KEY_DOWN and selected_task < len(tasks) - 1:
             selected_task += 1
+    return "Tasks viewed Successfully"
+
+def project_deleter(stdscr):
+    """
+    Allows user to delete a project
+    """
+    projects = shared.user.get_user_projects()  # Fetch user's projects
+    if projects:
+        stdscr.addstr(5, 30, "Your Projects:")
+        for i, project in enumerate(projects, start=1):
+            stdscr.addstr(5 + i, 32, f"{i}. {project[1]}")
+        stdscr.refresh()
+        # Get user input for project selection
+        project_selection = get_input(stdscr, "Enter the number of the project to Delete (or press 'Enter' to go back): ", 10 + len(projects), 35)
+        stdscr.clear()
+        if project_selection.isnumeric():
+            project_selection = int(project_selection)
+            if 1 <= project_selection <= len(projects):
+                # Fetch project details
+                selected_project_id = projects[project_selection - 1][0]
+                project_details = shared.user.remove_project(selected_project_id)
+                return "Project Deleted Succesfully"
+            else:
+                stdscr.addstr(14, 32, "Invalid project selection.")
+        else:
+            stdscr.addstr(14, 32, "Invalid input. Please enter a valid project number or 'B' to go back.", curses.A_BOLD)
+    else:
+        stdscr.addstr(5, 30, "No projects found.")
 
 def project_viewer(stdscr):
-    """allows user to select and view a project
+    """
+    Allows user to select and view a project
     """
     projects = shared.user.get_user_projects()  # Fetch user's projects
     if projects:
@@ -342,7 +382,8 @@ def project_viewer(stdscr):
         stdscr.addstr(5, 30, "No projects found.")
 
 def project_modifier(stdscr):
-    """Displays and updates project details (updates db too)
+    """
+    Displays and updates project details (updates db too)
     """
     stdscr.addstr(5, 30, "You chose 'Modify Project'")
     stdscr.addstr(6, 32, "Select a project to modify:")
@@ -387,18 +428,21 @@ def project_modifier(stdscr):
                         # Update the project title in the database
                         shared.user.update_project(selected_project_id, new_title, project_details[2], project_details[3])
                         stdscr.addstr(26, 32, "Project title modified successfully.", curses.A_BOLD)
+                        return "Project Title Modified successfully"
                     elif option == "2":
                         # Allow the user to change the project details
                         new_details = get_input(stdscr, "New Project Details: ", 23, 32)
                         # Update the project details in the database
                         shared.user.update_project(selected_project_id, project_details[1], new_details, project_details[3])
                         stdscr.addstr(26, 32, "Project details modified successfully.", curses.A_BOLD)
+                        return "Project Details Modified successfully"
                     elif option == "3":
                         # Allow the user to change the project deadline
                         new_deadline = display_calendar(stdscr)
                         # Update the project deadline in the database
                         shared.user.update_project(selected_project_id, project_details[1], project_details[2], new_deadline)
                         stdscr.addstr(26, 32, "Project deadline modified successfully.", curses.A_BOLD)
+                        return "Project Deadline Modified successfully"
                     elif option == "4":
                         stdscr.clear()
                         stdscr.addstr(5, 30, "You chose 'Add Tasks to Project'")
@@ -467,6 +511,8 @@ def dashboard(stdscr):
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
+   
+
     options = ["Create Task", "Modify Task", "Remove Task",
                "Create Project", "Modify Project", "Remove Project", "View Tasks", "View Projects", "Logout"]
 
@@ -477,6 +523,8 @@ def dashboard(stdscr):
     while True:
         stdscr.clear()
         stdscr.refresh()
+        
+
 
         # Display the menu options
         height, width = stdscr.getmaxyx()
@@ -489,6 +537,7 @@ def dashboard(stdscr):
                 stdscr.attroff(curses.color_pair(1))
             else:
                 stdscr.addstr(y, x, option)
+        
 
         # Display tasks in the timeline bar
         taskslist = shared.user.get_user_tasks()
@@ -502,6 +551,7 @@ def dashboard(stdscr):
             newlist[taskinfo[0]] = taskinfo[1]
         sorted_list = sorted(newlist.items(), key=lambda x:x[1])
         
+
         # Display tasks in the timeline bar
         if sorted_list:
             max_displayed_tasks = min(curses.LINES - 2, len(sorted_list))
@@ -529,21 +579,41 @@ def dashboard(stdscr):
             # Execute the selected option
             stdscr.clear()
             if selected_row == 0:
-                create_field_page(stdscr, "Create Task", "title", "details", "deadline")
+                result = create_field_page(stdscr, "Create Task", "title", "details", "deadline")
+                testresult.append(result)
             elif selected_row == 1:
-                task_modifier(stdscr)                   
+                result = task_modifier(stdscr)    
+                testresult.append(result)               
             elif selected_row == 2:
-                task_deleter(stdscr)
+                result = task_deleter(stdscr)
+                testresult.append(result)
             elif selected_row == 3:
-                create_field_page(stdscr, "Create Project", "title", "details", "deadline")
+                result = create_field_page(stdscr, "Create Project", "title", "details", "deadline")
             elif selected_row == 4:
-                project_modifier(stdscr)
+                result = project_modifier(stdscr)
+                testresult.append(result)
             elif selected_row == 5:
-                stdscr.addstr(5, 30, "You chose 'Remove Project'")
+                result = project_deleter(stdscr)
+                testresult.append(result)
             elif selected_row == 6:
-                task_viewer(stdscr)
+                result = task_viewer(stdscr)
+                testresult.append(result)
             elif selected_row == 7:
-                project_viewer(stdscr)
+                result = project_viewer(stdscr)
+                testresult.append(result)
             elif selected_row == 8:
                 if shared.user:
                     shared.user.logout_user()
+                    break
+    
+
+    # Specify the new file name
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    file_name = f"Test_log_{timestamp}.txt"
+
+    # Open the file in write mode
+    with open(file_name, "w") as file:
+        # Iterate over the strings and write each one as a line
+        for string in testresult:
+            file.write(string + "\n")
+    landingpage.landing_page(stdscr)                

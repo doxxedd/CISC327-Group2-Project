@@ -116,14 +116,12 @@ def show_time(stdscr):
 
 def validate_user(username, password):
     """
-    Function to validate user when logging in
-    :param username: user's username
-    :param password: user's password
-    :return: True if verified, False otherwise
+    Function to verify user credential in database when logging in
     """
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    # validate from database
+
+    # check database
     cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
     user = cursor.fetchone()
 
@@ -187,6 +185,7 @@ def landing_page(stdscr):
     conn.close()
     # set_terminal_size(1200, 1000)
     while True:
+        
         curses.curs_set(1)
         stdscr.clear()
 
