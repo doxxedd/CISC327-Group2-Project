@@ -311,7 +311,7 @@ def task_viewer(stdscr):
             selected_task -= 1
         elif key == curses.KEY_DOWN and selected_task < len(tasks) - 1:
             selected_task += 1
-    return "Tasks viewed Successfully"
+    return "Tasks Viewed Successfully"
 
 
 def project_deleter(stdscr):
@@ -463,7 +463,7 @@ def project_modifier(stdscr):
                         # Display a list of available tasks
                         tasks = shared.user.get_user_tasks()  # Fetch user's tasks
                         if tasks:
-                            stdscr.addstr(6, 32, "Select tasks to add to the project (use space to select/deselect, press 'Enter' when done):")
+                            stdscr.addstr(6, 32, "Select tasks to add to the project (use task number to select/deselect, press 'Enter' when done):")
                             task_selections = [False] * len(tasks)  # Initialize task selections as all False
                             current_row = 7
 
@@ -494,8 +494,10 @@ def project_modifier(stdscr):
                                 shared.user.add_task_to_project(selected_project_id, task_id)
 
                             stdscr.addstr(7 + len(tasks), 32, "Tasks added to the project successfully.", curses.A_BOLD)
+                            return "Task Added to Project Successfully"
                         else:
                             stdscr.addstr(6, 32, "No tasks found to add to the project.")
+                            return "No Tasks to Add"
 
                         stdscr.refresh()
                     elif option == "5":
