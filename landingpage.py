@@ -8,10 +8,6 @@ import sqlite3
 from core_objects import User
 import shared
 
-
-
-
-
 def register_user(username, password):
     """
     Function to register user into system
@@ -221,13 +217,15 @@ def landing_page(stdscr):
             stdscr.addstr(9, get_center_x("Login successful!"), "Login successful!", curses.A_BOLD)
 
             shared.user = User()
-            shared.user.login_user(username, password)
+            if shared.user.login_user(username, password):
+                dashboard.testresult.append("Login successful")
             dashboard.dashboard(stdscr)
             break  # Exit the loop if login is successful
         else:
             curses.curs_set(0)
             stdscr.addstr(9, get_center_x("Login failed."), "Login failed.", curses.A_BOLD)
 
+        dashboard.testresult.append("Login failed")
         stdscr.addstr(11, get_center_x("Press 'R' to retry or 'C' to register."), "Press 'R' to retry or 'C' to register.", curses.A_BOLD)
         stdscr.refresh()
         action = stdscr.getch()
@@ -236,8 +234,10 @@ def landing_page(stdscr):
             # User chose to register, proceed with registration
             registration_success = register_user(username, password)
             if registration_success:
+                dashboard.testresult.append("Registration successful")
                 stdscr.addstr(9, get_center_x("Registration successful!"), "Registration successful!", curses.A_BOLD)
             else:
+                dashboard.testresult.append("Registration failed")
                 curses.curs_set(0)
                 stdscr.addstr(9, get_center_x("Registration failed. Username already exists."), "Registration failed. Username already exists.", curses.A_BOLD)
 
