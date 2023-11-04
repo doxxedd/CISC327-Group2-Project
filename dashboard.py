@@ -623,5 +623,6 @@ def dashboard(stdscr):
     with open(file_name, "w") as file:
         # Iterate over the strings and write each one as a line
         for string in testresult:
-            file.write(f"{string} + \n")
+            if string != "none":
+                file.write(f"{string} \n")
     landingpage.landing_page(stdscr)
