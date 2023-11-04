@@ -333,7 +333,7 @@ def project_deleter(stdscr):
                 # Fetch project details
                 selected_project_id = projects[project_selection - 1][0]
                 project_details = shared.user.remove_project(selected_project_id)
-                return "Project Deleted Succesfully"
+                return "Project Deleted Successfully"
             else:
                 stdscr.addstr(14, 32, "Invalid project selection.")
         else:
@@ -598,7 +598,6 @@ def dashboard(stdscr):
                 testresult.append(result)
             elif selected_row == 3:
                 result = create_field_page(stdscr, "Create Project", "title", "details", "deadline")
-                testresult.append(result)
             elif selected_row == 4:
                 result = project_modifier(stdscr)
                 testresult.append(result)
@@ -624,5 +623,5 @@ def dashboard(stdscr):
     with open(file_name, "w") as file:
         # Iterate over the strings and write each one as a line
         for string in testresult:
-            file.write(f"{string} \n")
+            file.write(f"{string} + \n")
     landingpage.landing_page(stdscr)
