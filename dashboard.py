@@ -613,6 +613,7 @@ def dashboard(stdscr):
             elif selected_row == 8:
                 if shared.user:
                     shared.user.logout_user()
+                    testresult.append("User logged-out successfully")
                     break
 
     # Specify the new file name
