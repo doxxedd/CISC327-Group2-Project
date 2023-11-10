@@ -8,6 +8,8 @@ import sqlite3
 from core_objects import User
 import shared
 
+testresult = None
+
 def register_user(username, password):
     """
     Function to register user into system
@@ -114,6 +116,7 @@ def validate_user(username, password):
     """
     Function to verify user credential in database when logging in
     """
+    print("here")
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
@@ -122,6 +125,7 @@ def validate_user(username, password):
     user = cursor.fetchone()
 
     conn.close()
+    testresult = True
 
     return user is not None
 
