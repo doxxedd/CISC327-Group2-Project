@@ -121,9 +121,15 @@ def create_field_page(stdscr, option, field1, field2, field3):
     :param field3: Field prompt for input by user
     :return: None
     """
+    if not curses.has_colors():
+        curses.initscr()
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+
     curses.curs_set(1)
     stdscr.clear()
     stdscr.refresh()
+
     # Create Task
     stdscr.addstr(5, 30, f"You chose '{option}'")
     taskoptions = ["Create Task", "Modify Task", "Remove Task"]
