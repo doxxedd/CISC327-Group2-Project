@@ -1,34 +1,35 @@
-"""This python file aims to mimic interaction of a user using their keyboard to
-interact with this program. We can use the sequence of keystrokes to test the
-program.
-"""
-
-import subprocess
-import pyautogui as p
+import curses
+import threading
 import time
+import keyboard
+import landingpage
 
-p.PAUSE = 1  # delay keystrokes by 0.3s after each call
+def curses_main(stdscr):
+    stdscr.clear()
+    stdscr.addstr(0, 0, "Press 'q' to quit")
 
+    while True:
+        key = stdscr.getch()
+        if key == ord('q'):
+            break
 
-def create_instance():
-    """Runs an instance of the program"""
-    try:
-        subprocess.run('python3 main.py', check=True, shell=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error {e}")
-
-
-def login():
+def keyboard_listener(stdscr):
     time.sleep(2)
-    for _ in range(2):
-        p.typewrite("test")
-        p.press('enter')
+    keyboard.write('test')
+    time.sleep(2)
+    keyboard.press_and_release("enter")
 
 
-def run():
-    create_instance()
-    login()
+def main(stdscr):
+    curses_thread = threading.Thread(target=landingpage.landing_page, args=(stdscr,))
+    keyboard_thread = threading.Thread(target=keyboard_listener, args=(stdscr,))
 
+    curses_thread.start()
+    keyboard_thread.start()
+
+    curses_thread.join()
+    keyboard_thread.join()
 
 if __name__ == "__main__":
-    run()
+    
+    curses.wrapper(main)
