@@ -18,6 +18,7 @@ def worker():
     create_task("title", "details")
     create_project("title", "details")
     modify_task("new title", "new details")
+    modify_project("new project title", "new project detailss")
 
 
 def login():
@@ -45,6 +46,15 @@ def modify_task(title, details):
     p.press("1")
     p.press("enter")
     p.typewrite(f"{title}\n{details}\n\n")
+
+
+def modify_project(title, details):
+    p.press("down", presses=3)
+    p.press("enter")
+    p.press("1")
+    p.press("enter")
+    p.typewrite(f"{title}\n")
+    
 
 
 if __name__ == "__main__":
