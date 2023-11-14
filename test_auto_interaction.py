@@ -25,6 +25,7 @@ def worker():
     view_project()
     remove_task()
     remove_project()
+    logout()
 
 
 def login():
