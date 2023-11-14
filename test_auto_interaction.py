@@ -21,6 +21,8 @@ def worker():
     create_project("title", "details")
     modify_task("new title", "new details")
     modify_project("new project title")
+    remove_task()
+    remove_project()
 
 
 def login():
