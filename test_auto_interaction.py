@@ -14,6 +14,21 @@ def create_instance(stdscr):
     landingpage.landing_page(stdscr)
 
 
+
+'''black box test for creating task'''
+def black_box_create_task():
+    time.sleep(2)
+    login()
+    create_task("", "details")
+    create_task("test", "")
+    create_task("", "")
+    create_task("1", "0")
+    create_task("0", "1")
+    create_task("-1", "1")
+    p.press("down", presses=8)
+    p.press("enter", presses=5)
+
+
 def worker():
     time.sleep(2)
     login()

@@ -19,14 +19,19 @@ def test_login():
     # Check the output to verify the expected message
 
     assert result is True
+def test_fail_login():
+    
+    result = landingpage.validate_user("unkown", "test")
+    assert result is True
 
-
+'''Black box for false user'''
 def test_wrong_login():
     unknown_list = ["unkown", "testtttt", "1", "1B", "B1", "()", "+-", "#"]
     for i in unknown_list:
         result = landingpage.validate_user(i, i)
-    # Check the output to verify the expected message
     assert result is False
+    # Check the output to verify the expected message
+    # assert result is False
 
 
 def test_create_task():
