@@ -53,8 +53,10 @@ def modify_project(title, details):
     p.press("enter")
     p.press("1")
     p.press("enter")
+    p.press("1")
+    p.press("enter")
     p.typewrite(f"{title}\n")
-    
+
 
 
 if __name__ == "__main__":
