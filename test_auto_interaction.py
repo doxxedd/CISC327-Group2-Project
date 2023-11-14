@@ -79,11 +79,17 @@ def modify_project(title):
 
 
 def remove_task():
-    pass
+    p.press("up", presses=2)
+    p.press("enter")
+    p.press("1")
+    p.press("enter")
 
 
 def remove_project():
-    pass
+    p.press("down", presses=3)
+    p.press("enter")
+    p.press("1")
+    p.press("enter")
 
 
 def main():
