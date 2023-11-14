@@ -116,7 +116,7 @@ def validate_user(username, password):
     """
     Function to verify user credential in database when logging in
     """
-    print("here")
+    
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 

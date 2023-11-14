@@ -35,14 +35,14 @@ def test_create_task():
     result = test_auto_interaction.dict["create_task"]
     # Check the output to verify the expected message
    
-    assert result is "Task Created Succesfully"
+    assert result == "Task Created Succesfully"
 
 def test_create_project():
 
     result = test_auto_interaction.dict["create_project"]
     # Check the output to verify the expected message
    
-    assert result is "Project Created Succesfully"
+    assert result == "Project Created Succesfully"
 
 
 def test_modify_project():
@@ -50,7 +50,7 @@ def test_modify_project():
     result = test_auto_interaction.dict["create_project"]
     # Check the output to verify the expected message
    
-    assert result is "Project Created Succesfully"
+    assert result == "Project Created Succesfully"
 
 # # Define a fixture to set up the necessary environment for testing
 # @pytest.fixture
@@ -157,4 +157,4 @@ def test_modify_project():
 
 if __name__ == "__main__":
     test_auto_interaction.main()
-    pytest.main
+    pytest.main()

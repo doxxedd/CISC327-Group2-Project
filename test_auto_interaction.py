@@ -116,7 +116,7 @@ def remove_project():
 
 def logout():
     p.press("down", presses=3)
-    p.press("enter", presses=3)
+    p.press("enter", presses=5)
 
 
 def main():
