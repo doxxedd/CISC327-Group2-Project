@@ -9,7 +9,7 @@ import shared
 import datetime
 import calendar
 import time
-
+test = None
 testresult = []
 
 
@@ -153,6 +153,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
         if option == "Create Task":
             task = core_objects.Task()
             task.create_task(field1, field2, field3)
+            test = "Task Created Successfully"
             return "Task Created Successfully"
 
     if option in projectoptions:
@@ -162,6 +163,7 @@ def create_field_page(stdscr, option, field1, field2, field3):
         if option == "Create Project":
             project = core_objects.Project()
             project.create_project(field1, field2, field3)
+            test = "Project Created Successfully"
             return "Project Created Successfully"
 
     if field1 == "test" and field2 == "test" and field3 == "test":
@@ -215,6 +217,7 @@ def task_modifier(stdscr):
                     # Update the task
                     shared.user.update_task(selected_task_id, new_tasks[1], new_tasks[2], new_tasks[3])
                     stdscr.addstr(19, 30, "Task modified successfully.", curses.A_BOLD)
+                    test = "Task Modified Successfully"
                     return "Task Modified Successfully"
                 else:
                     stdscr.addstr(19, 30, "Task not found or doesn't belong to you.", curses.A_BOLD)
@@ -225,6 +228,7 @@ def task_modifier(stdscr):
             stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(5, 30, "No tasks found to modify.")
+        test = "No tasks found to modify"
         return "No tasks found to modify"
 
 
@@ -248,6 +252,7 @@ def task_deleter(stdscr):
                 selected_task_id = tasks[task_selection - 1][0]
                 shared.user.remove_task_from_db(selected_task_id)
                 stdscr.addstr(19, 30, "Task deleted successfully.", curses.A_BOLD)
+                test = "Task Deleted Successfully"
                 return "Task Deleted Successfully"
             else:
                 stdscr.addstr(19, 30, "Invalid task selection.", curses.A_BOLD)
@@ -255,6 +260,7 @@ def task_deleter(stdscr):
             stdscr.addstr(19, 30, "Invalid input. Please enter a valid task number or 'B' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(5, 30, "No tasks found to delete.")
+        test = "No Tasks Found to Delete"
         return "No Tasks Found to Delete"
 
 
@@ -303,6 +309,7 @@ def task_viewer(stdscr):
                 stdscr.addstr(4, 0, f"Deadline: {task_details[3]}")
             else:
                 stdscr.addstr(2, 0, "Task not found or doesn't belong to you.")
+                test = "Task Not Found"
                 return "Task Not Found"
 
             stdscr.addstr(7, 0, "Press 'Enter' to go back to the task list.")
@@ -317,6 +324,7 @@ def task_viewer(stdscr):
             selected_task -= 1
         elif key == curses.KEY_DOWN and selected_task < len(tasks) - 1:
             selected_task += 1
+    test = "Tasks Viewed Successfully"
     return "Tasks Viewed Successfully"
 
 
@@ -339,6 +347,7 @@ def project_deleter(stdscr):
                 # Fetch project details
                 selected_project_id = projects[project_selection - 1][0]
                 project_details = shared.user.remove_project(selected_project_id)
+                test = "Project Deleted Successfully"
                 return "Project Deleted Successfully"
             else:
                 stdscr.addstr(14, 32, "Invalid project selection.")
@@ -346,6 +355,7 @@ def project_deleter(stdscr):
             stdscr.addstr(14, 32, "Invalid input. Please enter a valid project number or 'B' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(5, 30, "No projects found.")
+        test = "Project Deleted Successfully"
         return "No Projects Found to Delete"
 
 
@@ -385,6 +395,7 @@ def project_viewer(stdscr):
                     stdscr.refresh()
 
                     key = stdscr.getch()
+                    test = "Project Viewed Successfully"
                     return "Project Viewed Successfully"
 
                     if key == 10:  # Enter key (go back)
@@ -397,6 +408,7 @@ def project_viewer(stdscr):
             stdscr.addstr(14, 32, "Invalid input. Please enter a valid project number or 'B' to go back.", curses.A_BOLD)
     else:
         stdscr.addstr(5, 30, "No projects found.")
+        test = "Project Not Found"
         return "Project Not Found"
 
 
