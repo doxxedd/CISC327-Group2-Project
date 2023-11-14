@@ -26,6 +26,7 @@ def worker():
 def login():
     # as test:test
     for _ in range(2):
+        p.keyUp('Fn')
         p.typewrite("test\n")
     dict["login"] = landingpage.testresult
 
@@ -33,6 +34,7 @@ def login():
 def create_task(title, details):
     """creates task with given title and details. today's deadline
     """
+    p.keyUp('Fn')
     p.typewrite(f"{title}\n{details}\n")
     # Deadline is always today in this test
     p.press('enter', presses=2)
@@ -44,6 +46,7 @@ def create_project(title, details):
     """
     p.press("down", presses=3)
     p.press("enter")
+    p.keyUp('Fn')
     p.typewrite(f"{title}\n{details}\n")
     p.press("enter")
     dict["create_project"] = dashboard.test
@@ -56,6 +59,7 @@ def modify_task(title, details):
     p.press("enter")
     p.press("1")
     p.press("enter")
+    p.keyUp('Fn')
     p.typewrite(f"{title}\n{details}\n\n")
     dict["modify_task"] = dashboard.test
 
@@ -69,6 +73,7 @@ def modify_project(title):
     p.press("enter")
     p.press("1")
     p.press("enter")
+    p.keyUp('Fn')
     p.typewrite(f"{title}\n\n1\n4\n1\n")
     dict["modify_project"] = dashboard.test
 
