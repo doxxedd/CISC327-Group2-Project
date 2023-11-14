@@ -15,7 +15,7 @@ def create_instance(stdscr):
 
 
 def worker():
-    time.sleep(0.5)
+    time.sleep(4)
     login()
     create_task("title", "details")
     create_project("title", "details")

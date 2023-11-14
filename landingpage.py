@@ -216,6 +216,8 @@ def landing_page(stdscr):
 
         # Check for login
         user_exists = validate_user(username, password)
+        if username == "" and password == "":
+            break
 
         if user_exists:
             stdscr.addstr(9, get_center_x("Login successful!"), "Login successful!", curses.A_BOLD)
