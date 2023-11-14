@@ -21,6 +21,8 @@ def worker():
     create_project("title", "details")
     modify_task("new title", "new details")
     modify_project("new project title")
+    view_task()
+    view_project()
     remove_task()
     remove_project()
 
@@ -80,8 +82,25 @@ def modify_project(title):
     dict["modify_project"] = dashboard.test
 
 
+def view_task():
+    """views first task in list
+    """
+    p.press("down", presses=2)
+    p.press("enter", presses=3)
+    p.press("q")
+
+
+def view_project():
+    """views first project in list
+    """
+    p.press("down")
+    p.press("enter")
+    p.press("1")
+    p.press("enter", presses=2)
+
+
 def remove_task():
-    p.press("up", presses=2)
+    p.press("up", presses=5)
     p.press("enter")
     p.press("1")
     p.press("enter")
@@ -92,6 +111,11 @@ def remove_project():
     p.press("enter")
     p.press("1")
     p.press("enter")
+
+
+def logout():
+    p.press("down", presses=3)
+    p.press("enter", presses=3)
 
 
 def main():
