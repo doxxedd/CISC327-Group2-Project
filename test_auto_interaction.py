@@ -13,19 +13,25 @@ def create_instance(stdscr):
 
 
 def worker():
+    time.sleep(1)
     login()
+    create_task("title", "detaillssss")
 
 
 def login():
-    time.sleep(2)
     for _ in range(2):
-        p.typewrite("test")
-        p.press('enter')
+        p.typewrite("test\n")
 
 
-def create_task():
-    pass
+def create_task(title, details):
+    p.typewrite(f"{title}\n")
+    p.typewrite(f"{details}\n")
 
+    time.sleep(0.5)
+    # Deadline is always 3 days in the future in this test
+    for _ in range(5):
+        p.press('right')
+    p.press('enter')
 
 if __name__ == "__main__":
     curses.wrapper(create_instance)
