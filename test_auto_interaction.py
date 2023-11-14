@@ -1,44 +1,31 @@
 import curses
 import threading
 import time
-import keyboard
 import landingpage
 import pyautogui as p
 
 
+def create_instance(stdscr):
+    keyboard_thread = threading.Thread(target=worker)
+    keyboard_thread.start()
+    keyboard_thread.join()
+    landingpage.landing_page(stdscr)
 
 
-def keyboard_listener():
-    # time.sleep(2)
-    # keyboard.write('test')
-    # # time.sleep(2)
-    # keyboard.press_and_release("enter")
-    # keyboard.write('test')
-    # time.sleep(2)
-    # keyboard.press_and_release("enter")
-    # keyboard.press_and_release("enter")
-    # keyboard.write("test")
-    # keyboard.press_and_release("enter")
-    # keyboard.write("test")
-    # keyboard.press_and_release("enter")
-    # keyboard.press_and_release("enter")
+def worker():
+    login()
+
+
+def login():
     time.sleep(2)
     for _ in range(2):
         p.typewrite("test")
         p.press('enter')
 
 
-def main(stdscr):
-    # curses_thread = threading.Thread(landingpage.landing_page(stdscr))
-    keyboard_thread = threading.Thread(target=keyboard_listener)
-    # curses_thread.start()
-    keyboard_thread.start()
+def create_task():
+    pass
 
-    # curses_thread.join()
-    keyboard_thread.join()
-    landingpage.landing_page(stdscr)
-    
 
 if __name__ == "__main__":
-
-    curses.wrapper(main)
+    curses.wrapper(create_instance)
