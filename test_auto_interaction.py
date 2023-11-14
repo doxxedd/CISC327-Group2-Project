@@ -61,7 +61,7 @@ def modify_task(title, details):
 
 
 def modify_project(title):
-    """changes title and assigns task to project
+    """changes title and assign first task to project
     """
     p.press("down", presses=3)
     p.press("enter")
@@ -69,8 +69,15 @@ def modify_project(title):
     p.press("enter")
     p.press("1")
     p.press("enter")
-    p.typewrite(f"{title}\n\n1\n")
-    # change
+    p.typewrite(f"{title}\n\n1\n4\n1\n")
+
+
+def remove_task():
+    pass
+
+
+def remove_project():
+    pass
 
 
 def main():
