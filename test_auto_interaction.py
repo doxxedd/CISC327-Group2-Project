@@ -3,8 +3,8 @@ import threading
 import time
 import landingpage
 import pyautogui as p
+import shared
 import dashboard
-dict = {}
 
 
 def create_instance(stdscr):
@@ -15,7 +15,7 @@ def create_instance(stdscr):
 
 
 def worker():
-    time.sleep(4)
+    time.sleep(2)
     login()
     create_task("title", "details")
     create_project("title", "details")
@@ -33,7 +33,7 @@ def login():
     for _ in range(2):
         p.keyUp('Fn')
         p.typewrite("test\n")
-    dict["login"] = landingpage.testresult
+    shared.dict["login"] = landingpage.testresult
 
 
 def create_task(title, details):
@@ -43,7 +43,7 @@ def create_task(title, details):
     p.typewrite(f"{title}\n{details}\n")
     # Deadline is always today in this test
     p.press('enter', presses=2)
-    dict["create_task"] = dashboard.test
+    shared.dict["create_task"] = shared.test
 
 
 def create_project(title, details):
@@ -54,7 +54,7 @@ def create_project(title, details):
     p.keyUp('Fn')
     p.typewrite(f"{title}\n{details}\n")
     p.press("enter")
-    dict["create_project"] = dashboard.test
+    shared.dict["create_project"] = shared.test
 
 
 def modify_task(title, details):
@@ -66,7 +66,7 @@ def modify_task(title, details):
     p.press("enter")
     p.keyUp('Fn')
     p.typewrite(f"{title}\n{details}\n\n")
-    dict["modify_task"] = dashboard.test
+    shared.dict["modify_task"] = shared.test
 
 
 def modify_project(title):
@@ -80,7 +80,7 @@ def modify_project(title):
     p.press("enter")
     p.keyUp('Fn')
     p.typewrite(f"{title}\n\n1\n4\n1\n")
-    dict["modify_project"] = dashboard.test
+    shared.dict["modify_project"] = shared.test
 
 
 def view_task():

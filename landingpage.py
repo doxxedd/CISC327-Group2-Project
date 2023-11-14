@@ -126,6 +126,7 @@ def validate_user(username, password):
 
     conn.close()
     testresult = True
+    shared.dict["login"] = True
 
     return user is not None
 
