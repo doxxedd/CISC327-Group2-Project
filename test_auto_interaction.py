@@ -14,9 +14,12 @@ def curses_main(stdscr):
             break
 
 def keyboard_listener(stdscr):
-    time.sleep(2)
+    # time.sleep(2)
     keyboard.write('test')
-    time.sleep(2)
+    # time.sleep(2)
+    keyboard.press_and_release("enter")
+    keyboard.write('test')
+    # time.sleep(2)
     keyboard.press_and_release("enter")
 
 
@@ -31,5 +34,5 @@ def main(stdscr):
     keyboard_thread.join()
 
 if __name__ == "__main__":
-    
+
     curses.wrapper(main)
