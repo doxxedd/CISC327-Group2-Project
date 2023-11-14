@@ -3,24 +3,29 @@ import threading
 import time
 import keyboard
 import landingpage
+import pyautogui as p
 
 
 
 
 def keyboard_listener():
-    time.sleep(2)
-    keyboard.write('test')
     # time.sleep(2)
-    keyboard.press_and_release("enter")
-    keyboard.write('test')
+    # keyboard.write('test')
+    # # time.sleep(2)
+    # keyboard.press_and_release("enter")
+    # keyboard.write('test')
+    # time.sleep(2)
+    # keyboard.press_and_release("enter")
+    # keyboard.press_and_release("enter")
+    # keyboard.write("test")
+    # keyboard.press_and_release("enter")
+    # keyboard.write("test")
+    # keyboard.press_and_release("enter")
+    # keyboard.press_and_release("enter")
     time.sleep(2)
-    keyboard.press_and_release("enter")
-    keyboard.press_and_release("enter")
-    keyboard.write("test")
-    keyboard.press_and_release("enter")
-    keyboard.write("test")
-    keyboard.press_and_release("enter")
-    keyboard.press_and_release("enter")
+    for _ in range(2):
+        p.typewrite("test")
+        p.press('enter')
 
 
 def main(stdscr):
