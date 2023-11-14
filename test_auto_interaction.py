@@ -70,6 +70,7 @@ def modify_project(title):
     p.press("1")
     p.press("enter")
     p.typewrite(f"{title}\n\n1\n4\n1\n")
+    dict["modify_project"] = dashboard.test
 
 
 def remove_task():

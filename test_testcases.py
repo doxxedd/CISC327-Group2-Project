@@ -8,30 +8,49 @@ import dashboard
 import sqlite3
 import curses
 import shared
+import test_auto_interaction
 
 conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
 # current_user = User()  # Initialize current_user as an instance of the User class
 
-def test_login(monkeypatch):
-    # Mock the user input to simulate different scenarios
-    inputs = ['test', '\n', 'test', '\n']
+def test_login():
 
-    result = landingpage.validate_user("test", "test")
-    user = shared.user
-    print (user)
+    result = test_auto_interaction.dict["login"]
     # Check the output to verify the expected message
    
     assert result is True
 
-def test_wrong_login(monkeypatch):
-    # Mock the user input to simulate different scenarios
-    inputs = ['test', '\n', 'test', '\n']
+def test_wrong_login():
+    
 
     result = landingpage.validate_user("unkown", "test")
     # Check the output to verify the expected message
    
     assert result is True
+
+def test_create_task():
+    
+
+    result = test_auto_interaction.dict["create_task"]
+    # Check the output to verify the expected message
+   
+    assert result is "Task Created Succesfully"
+
+def test_create_project():
+
+    result = test_auto_interaction.dict["create_project"]
+    # Check the output to verify the expected message
+   
+    assert result is "Project Created Succesfully"
+
+
+def test_modify_project():
+
+    result = test_auto_interaction.dict["create_project"]
+    # Check the output to verify the expected message
+   
+    assert result is "Project Created Succesfully"
 
 # # Define a fixture to set up the necessary environment for testing
 # @pytest.fixture
@@ -135,3 +154,7 @@ def test_wrong_login(monkeypatch):
 #     # result = mock_stdout.getvalue().strip()
 #     # print("Actual Result:", result)
 #     # assert "Task Created Successfully" in result
+
+if __name__ == "__main__":
+    test_auto_interaction.main()
+    pytest.main
