@@ -17,6 +17,7 @@ def worker():
     login()
     create_task("title", "details")
     create_project("title", "details")
+    modify_task("new title", "new details")
 
 
 def login():
@@ -30,14 +31,21 @@ def create_task(title, details):
     # Deadline is always today in this test
     p.press('enter', presses=2)
 
+
 def create_project(title, details):
     p.press("down", presses=3)
     p.press("enter")
     p.typewrite(f"{title}\n{details}\n")
     p.press("enter")
 
+
 def modify_task(title, details):
-    pass
+    p.press("up", presses=2)
+    p.press("enter")
+    p.press("1")
+    p.press("enter")
+    p.typewrite(f"{title}\n{details}\n\n")
+
 
 if __name__ == "__main__":
     curses.wrapper(create_instance)
