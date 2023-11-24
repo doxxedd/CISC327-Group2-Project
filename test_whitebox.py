@@ -167,6 +167,6 @@ if __name__ == "__main__":
 
     conn.commit()
     conn.close()
-    pytest 
+    pytest.main() 
     # test_add_task_to_project_path1()
     # test_get_project_details()
