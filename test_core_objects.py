@@ -111,8 +111,33 @@ class User:
             print("No user is currently logged in. Cannot remove a project.")
         return False
 
-    def get_tasks_in_project(self, project_id):
-        if self.user_id:
+    # def get_tasks_in_project(self, project_id):
+    #     if self.user_id:
+    #         # Check if the project belongs to the current user
+    #         cursor.execute('SELECT id FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
+    #         project = cursor.fetchone()
+    #         if project:
+    #             # Retrieve all the task IDs associated with the project
+    #             cursor.execute('SELECT task_id FROM project_tasks WHERE project_id = ?', (project_id,))
+    #             task_ids = cursor.fetchall()
+
+    #             # Fetch and return the details of each associated task
+    #             associated_tasks = []
+    #             for task_id in task_ids:
+    #                 task_id = task_id[0]
+    #                 task_details = list(self.get_task_details(task_id))
+    #                 if task_details:
+    #                     associated_tasks.append(task_details)
+
+    #             return associated_tasks
+    #         else:
+    #             print("Project not found or doesn't belong to you.")
+    #     else:
+    #         print("No user is currently logged in.")
+    #         return None
+        
+    def get_tasks_in_project_mutant1(self, project_id):
+        if not self.user_id:
             # Check if the project belongs to the current user
             cursor.execute('SELECT id FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
             project = cursor.fetchone()
@@ -136,7 +161,105 @@ class User:
             print("No user is currently logged in.")
             return None
         
+    def get_tasks_in_project_mutant2(self, project_id):
+        if self.user_id:
+            # Check if the project belongs to the current user
+            cursor.execute('SELECT id FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
+            project = cursor.fetchone()
+            if not project:
+                # Retrieve all the task IDs associated with the project
+                cursor.execute('SELECT task_id FROM project_tasks WHERE project_id = ?', (project_id,))
+                task_ids = cursor.fetchall()
+
+                # Fetch and return the details of each associated task
+                associated_tasks = []
+                for task_id in task_ids:
+                    task_id = task_id[0]
+                    task_details = list(self.get_task_details(task_id))
+                    if task_details:
+                        associated_tasks.append(task_details)
+
+                return associated_tasks
+            else:
+                print("Project not found or doesn't belong to you.")
+        else:
+            print("No user is currently logged in.")
+            return None
     
+    def get_tasks_in_project_mutant3(self, project_id):
+        if self.user_id:
+            # Check if the project belongs to the current user
+            cursor.execute('SELECT id FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
+            project = cursor.fetchone()
+            if project:
+                # Retrieve all the task IDs associated with the project
+                cursor.execute('SELECT task_id FROM project_tasks WHERE project_id = ?', (project_id,))
+                task_ids = cursor.fetchall()
+
+                # Fetch and return the details of each associated task
+                associated_tasks = []
+                for task_id in task_ids:
+                    task_id = task_id[1]
+                    task_details = list(self.get_task_details(task_id))
+                    if task_details:
+                        associated_tasks.append(task_details)
+
+                return associated_tasks
+            else:
+                print("Project not found or doesn't belong to you.")
+        else:
+            print("No user is currently logged in.")
+            return None
+        
+    def get_tasks_in_project_mutant4(self, project_id):
+        if self.user_id:
+            # Check if the project belongs to the current user
+            cursor.execute('SELECT id FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
+            project = cursor.fetchone()
+            if project:
+                # Retrieve all the task IDs associated with the project
+                cursor.execute('SELECT task_id FROM project_tasks WHERE project_id = ?', (project_id,))
+                task_ids = cursor.fetchall()
+
+                # Fetch and return the details of each associated task
+                associated_tasks = []
+                for task_id in task_ids:
+                    task_id = task_id[0]
+                    task_details = list(self.get_task_details(task_id))
+                    if not task_details:
+                        associated_tasks.append(task_details)
+
+                return associated_tasks
+            else:
+                print("Project not found or doesn't belong to you.")
+        else:
+            print("No user is currently logged in.")
+            return None
+        
+    def get_tasks_in_project_mutant5(self, project_id):
+        if self.user_id:
+            # Check if the project belongs to the current user
+            cursor.execute('SELECT id FROM projects WHERE id = ? AND user_id = ?', (project_id, self.user_id))
+            project = cursor.fetchone()
+            if project:
+                # Retrieve all the task IDs associated with the project
+                cursor.execute('SELECT task_id FROM project_tasks WHERE project_id = ?', (project_id,))
+                task_ids = cursor.fetchall()
+
+                # Fetch and return the details of each associated task
+                # associated_tasks = []
+                for task_id in task_ids:
+                    task_id = task_id[0]
+                    task_details = list(self.get_task_details(task_id))
+                    if task_details:
+                        associated_tasks.append(task_details)
+
+                return associated_tasks
+            else:
+                print("Project not found or doesn't belong to you.")
+        else:
+            print("No user is currently logged in.")
+            return None
 
     def update_task(self, task_id, title, details, deadline):
         if self.user_id:
