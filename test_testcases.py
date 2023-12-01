@@ -89,4 +89,4 @@ def test_view_project():
 
 if __name__ == "__main__":
     test_auto_interaction.main()
-    pytest.main()
+    pytest.main(["test_testcases.py"])

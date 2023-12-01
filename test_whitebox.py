@@ -105,18 +105,6 @@ def test_add_task_to_project_path5(capsys):
     captured = capsys.readouterr()
     assert captured == ('No user is currently logged in. Cannot add a task to the project.\n', '')
    
-    
-
-
-
-
-
-
-   
-    
-
-       
-
 
 
 if __name__ == "__main__":
@@ -167,6 +155,6 @@ if __name__ == "__main__":
 
     conn.commit()
     conn.close()
-    pytest.main() 
+    pytest.main(["test_whitebox.py"]) 
     # test_add_task_to_project_path1()
     # test_get_project_details()
